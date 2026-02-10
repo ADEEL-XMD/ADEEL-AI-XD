@@ -1,7 +1,5 @@
 /**
  * MAFIA ADEEL Bot - Ultra Fixed & Optimized
- * © 2026 Adeel Botz
- * ✅ Anti-Delete (All Media) | ✅ Auto Status View (100% Working) | ✅ Maximum Uptime
  */
 
 const config = require('./config');
@@ -14,46 +12,16 @@ const {
   isJidBroadcast,
   getContentType,
   proto,
-  generateWAMessageContent,
-  generateWAMessage,
-  AnyMessageContent,
-  prepareWAMessageMedia,
-  areJidsSameUser,
-  downloadContentFromMessage,
-  MessageRetryMap,
-  generateForwardMessageContent,
-  generateWAMessageFromContent,
-  generateMessageID,
-  makeInMemoryStore,
-  jidDecode,
   fetchLatestBaileysVersion,
   Browsers,
-  delay,
   makeCacheableSignalKeyStore
 } = require('@whiskeysockets/baileys');
 
-const l = console.log;
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('./lib/functions');
-const { AntiDelDB, initializeAntiDeleteSettings, setAnti, getAnti, getAllAntiDeleteSettings, saveContact, loadMessage, getName, getChatSummary, saveGroupMetadata, getGroupMetadata, saveMessageCount, getInactiveGroupMembers, getGroupMembersMessageCount, saveMessage } = require('./data');
 const fs = require('fs');
-const ff = require('fluent-ffmpeg');
 const P = require('pino');
-const GroupEvents = require('./lib/groupevents');
-const qrcode = require('qrcode-terminal');
-const StickersTypes = require('wa-sticker-formatter');
-const util = require('util');
-const { sms, downloadMediaMessage, AntiDelete } = require('./lib');
-const FileType = require('file-type');
-const { File } = require('megajs');
-const { fromBuffer } = require('file-type');
-const bodyparser = require('body-parser');
-const os = require('os');
-const Crypto = require('crypto');
 const path = require('path');
 const chalk = require('chalk');
-const { rmSync } = require('fs');
 const { Boom } = require('@hapi/boom');
-
 // ==================== PERFORMANCE OPTIMIZATION ====================
 if (process.env.NODE_OPTIONS !== '--max-old-space-size=4096') {
   process.env.NODE_OPTIONS = '--max-old-space-size=4096';
@@ -674,7 +642,7 @@ if (!fs.existsSync(sessionDir)) {
 
 if (!fs.existsSync(credsPath)) {
   if (config.SESSION_ID && config.SESSION_ID.trim() !== "") {
-    const sessdata = config.SESSION_ID.replace("MAFIA-MD~", '');
+    const sessdata = config.SESSION_ID.replace("ADEEL-XMD~", '');
     try {
       const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
       fs.writeFileSync(credsPath, decodedData);
@@ -684,61 +652,7 @@ if (!fs.existsSync(credsPath)) {
     }
   }
 }
-
-// ==================== ERROR HANDLER ====================
-async function handle408Error(statusCode) {
-  if (statusCode !== DisconnectReason.connectionTimeout) return false;
-  
-  global.errorRetryCount++;
-  let errorState = loadErrorCount();
-  const MAX_RETRIES = 5;
-  
-  errorState.count = global.errorRetryCount;
-  errorState.last_error_timestamp = Date.now();
-  saveErrorCount(errorState);
-
-  log(`Connection Timeout (408). Retry: ${global.errorRetryCount}/${MAX_RETRIES}`, 'yellow');
-  
-  if (global.errorRetryCount >= MAX_RETRIES) {
-    log(chalk.red.bgBlack('================================================='), 'white');
-    log(chalk.white.bgRed(`🚨 MAX TIMEOUTS (${MAX_RETRIES}) REACHED`), 'white');
-    log(chalk.red.bgBlack('================================================='), 'white');
-
-    deleteErrorCountFile();
-    global.errorRetryCount = 0;
-    
-    await delay(5000);
-    process.exit(1);
-  }
-  return true;
-}
-
-
-// ==================== PERFORMANCE OPTIMIZATION ====================
-if (process.env.NODE_OPTIONS !== '--max-old-space-size=4096') {
-  process.env.NODE_OPTIONS = '--max-old-space-size=4096';
-}
-process.env.UV_THREADPOOL_SIZE = '128';
-
-// ==================== CENTRALIZED LOGGING ====================
-function log(message, color = 'white', isError = false) {
-  const prefix = chalk.blue.bold('[ ADEEL-MD³⁰³ ]');
-  const logFunc = isError ? console.error : console.log;
-  const coloredMessage = chalk[color](message);
-  
-  if (message.includes('\n') || message.includes('════')) {
-    logFunc(prefix, coloredMessage);
-  } else {
-    logFunc(`${prefix} ${coloredMessage}`);
-  }
-}
-
-// ==================== GLOBAL FLAGS ====================
-global.isBotConnected = false;
-global.errorRetryCount = 0;
-global.messageCache = new Map();
-
-// ==================== FILE PATHS ====================
+// ==================== FILE PATHS (SIRF EK BAAR) ====================
 const MESSAGE_STORE_FILE = path.join(__dirname, 'message_backup.json');
 const SESSION_ERROR_FILE = path.join(__dirname, 'sessionErrorCount.json');
 const ANTIDELETE_SETTINGS_FILE = path.join(__dirname, 'antidelete_settings.json');
@@ -749,150 +663,542 @@ if (!fs.existsSync(TEMP_MEDIA_DIR)) {
   fs.mkdirSync(TEMP_MEDIA_DIR, { recursive: true });
 }
 
-// ==================== ANTI-DELETE SYSTEM ====================
-const messageStore = new Map();
-
-function loadAntiDeleteSettings() {
-  try {
-    if (fs.existsSync(ANTIDELETE_SETTINGS_FILE)) {
-      const data = fs.readFileSync(ANTIDELETE_SETTINGS_FILE, 'utf-8');
-      return JSON.parse(data);
+function log(message, color = 'white') {
+  console.log(chalk.blue.bold('[ ADEEL-MD³⁰³ ] ') + chalk[color](message));
+}
+  // ================== MESSAGE LOGGER & ANTI-DELETE ==================
+  conn.ev.on('messages.upsert', async chatUpdate => {
+    try {
+      for (const msg of chatUpdate.messages) {
+        if (!msg.message) continue;
+        
+        // Store for anti-delete
+        await storeMessageWithMedia(conn, msg);
+        
+        let messageId = msg.key.id;
+        global.messageCache.set(messageId, msg.message);
+        
+        if (global.messageCache.size > 500) {
+          const firstKey = global.messageCache.keys().next().value;
+          global.messageCache.delete(firstKey);
+        }
+      }
+    } catch (error) {
+      // Ignore
     }
-  } catch (error) {}
-  return { enabled: true };
-}
+  });
 
-function saveAntiDeleteSettings(settings) {
-  try {
-    fs.writeFileSync(ANTIDELETE_SETTINGS_FILE, JSON.stringify(settings, null, 2));
-    return true;
-  } catch (error) { return false; }
-}
-
-global.antiDeleteSettings = loadAntiDeleteSettings();
-
-async function storeMessageWithMedia(conn, message) {
-  try {
-    if (!global.antiDeleteSettings.enabled) return;
-    if (!message.key?.id) return;
-    const messageId = message.key.id;
-    const sender = message.key.participant || message.key.remoteJid;
-    const chatId = message.key.remoteJid;
-    let content = '';
-    let mediaType = '';
-    let mediaPath = '';
-    const viewOnceContainer = message.message?.viewOnceMessageV2?.message || message.message?.viewOnceMessage?.message;
-    const actualMessage = viewOnceContainer || message.message;
-
-    if (actualMessage?.conversation) content = actualMessage.conversation;
-    else if (actualMessage?.extendedTextMessage?.text) content = actualMessage.extendedTextMessage.text;
-    
-    messageStore.set(messageId, {
-      content, mediaType, sender, chatId,
-      isGroup: chatId.endsWith('@g.us'),
-      timestamp: new Date().toISOString()
-    });
-    if (messageStore.size > 100) messageStore.delete(messageStore.keys().next().value);
-  } catch (error) {}
-}
-
-async function handleDeletedMessage(conn, update) {
-  try {
-    if (!global.antiDeleteSettings.enabled) return;
-    for (const item of update) {
-      if (item.update.message === null) {
-        const messageId = item.key.id;
-        const original = messageStore.get(messageId);
-        if (!original) continue;
-        const ownerJid = conn.user.id.split(':')[0] + '@s.whatsapp.net';
-        await conn.sendMessage(ownerJid, { text: `*🚨 DELETED:* ${original.content || 'Media'} from @${original.sender.split('@')[0]}`, mentions: [original.sender] });
+  // ================== ANTI-DELETE HANDLER ==================
+  conn.ev.on('messages.update', async updates => {
+    for (const update of updates) {
+      if (update.update.message === null) {
+        await handleDeletedMessage(conn, updates);
       }
     }
-  } catch (error) {}
-}
+  });
 
-// ==================== MAIN CONNECTION (FIXED PORTION) ====================
+  // ================== ANTI-CALL ==================
+  conn.ev.on("call", async (json) => {
+    try {
+      if (config.ANTI_CALL !== 'true') return;
+
+      for (const call of json) {
+        if (call.status !== 'offer') continue;
+
+        const id = call.id;
+        const from = call.from;
+
+        await conn.rejectCall(id, from);
+        await conn.sendMessage(from, {
+          text: config.REJECT_MSG || '*📞 ᴄαℓℓ ɴσт αℓℓσωє∂ ιɴ тнιѕ ɴᴜмвєʀ уσυ ∂σɴт нανє ᴘєʀмιѕѕισɴ 📵*'
+        });
+        log(`Call rejected: ${from}`, 'cyan');
+      }
+    } catch (err) {
+      log("Anti-call error: " + err, 'red', true);
+    }
+  });
+
+  // ================== GROUP EVENTS ==================
+  conn.ev.on("group-participants.update", (update) => GroupEvents(conn, update));
+
+  // ================== MESSAGE HANDLER ==================
+  conn.ev.on('messages.upsert', async (mek) => {
+    try {
+      if (!mek.messages || !mek.messages[0]) return;
+
+      mek = mek.messages[0];
+      if (!mek.message) return;
+        
+      mek.message = (getContentType(mek.message) === 'ephemeralMessage') 
+        ? mek.message.ephemeralMessage.message 
+        : mek.message;
+
+      // ================== AUTO STATUS HANDLER (FIXED) ==================
+      if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+        try {
+          // Extract status information
+          const statusId = mek.key.id;
+          const statusJid = mek.key.participant || mek.participant;
+          
+          if (!statusJid || statusJid === 'status@broadcast') return;
+          
+          const statusUserId = statusJid.split('@')[0];
+          
+          // Log for debugging
+          log(`📱 Status detected from: ${statusUserId}`, 'cyan');
+          
+          // AUTO STATUS VIEW
+          if (global.autoStatusSettings.viewEnabled) {
+            setTimeout(async () => {
+              try {
+                await markStatusAsSeen(conn, statusJid, statusId);
+              } catch (error) {
+                log(`⚠️ Auto view error: ${error.message}`, 'yellow');
+              }
+            }, 1000);
+          }
+          
+          // AUTO STATUS REACT
+          if (global.autoStatusSettings.reactEnabled && canReactToStatus(statusUserId)) {
+            setTimeout(async () => {
+              try {
+                const randomChance = global.autoStatusSettings.randomChance || 100;
+                const shouldReact = Math.random() * 100 <= randomChance;
+                
+                if (shouldReact) {
+                  const emoji = getRandomEmoji();
+                  
+                  // Wait 2 seconds before reacting
+                  await delay(2000);
+                  await reactToStatus(conn, statusJid, statusId, emoji);
+                  
+                  updateReactionTime(statusUserId);
+                }
+              } catch (error) {
+                log(`⚠️ Auto react error: ${error.message}`, 'yellow');
+              }
+            }, 1500);
+          }
+          
+          // AUTO STATUS REPLY (Optional)
+          if (global.autoStatusSettings.replyEnabled) {
+            setTimeout(async () => {
+              try {
+                const replyText = config.AUTO_STATUS_MSG || 'Nice status! 💜';
+                await conn.sendMessage(statusJid, { 
+                  text: replyText 
+                });
+                log(`✅ Status replied: ${statusUserId}`, 'green');
+              } catch (error) {
+                log(`⚠️ Status reply error: ${error.message}`, 'yellow');
+              }
+            }, 3000);
+          }
+          
+        } catch (error) {
+          log(`⚠️ Status handler error: ${error.message}`, 'red', true);
+        }
+        return; // Important: Return here to avoid processing status as normal message
+      }
+
+      // READ MESSAGE
+      if (config.READ_MESSAGE === 'true') {
+        await conn.readMessages([mek.key]);
+      }
+
+      // VIEW ONCE
+      if(mek.message.viewOnceMessageV2) {
+        mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
+      }
+
+      // NEWSLETTER REACT
+      const newsletterJids = [
+        "120363423571792427@newsletter",
+        "120363374872240664@newsletter",
+        "120363423571792427@newsletter"
+      ];
+      const emojis = ["❤️", "💚", "🤍", "🩵", "🩷", "🪷", "🪸", "🍷", "🍬", "🌎", "🍨", "🌸", "🪄"];
+
+      if (mek.key && newsletterJids.includes(mek.key.remoteJid)) {
+        try {
+          if (!mek.newsletterServerId) return;
+          if (mek.newsletterServerId) {
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            await conn.newsletterReactMessage(mek.key.remoteJid, mek.newsletterServerId.toString(), emoji);
+          }
+        } catch (e) {
+          // Ignore
+        }
+      }
+
+      await Promise.all([saveMessage(mek)]);
+
+      const m = sms(conn, mek);
+      const type = getContentType(mek.message);
+      const content = JSON.stringify(mek.message);
+      const from = mek.key.remoteJid;
+      const quoted = type == 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
+      const body = (type === 'conversation') ? mek.message.conversation : (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : '';
+      const isCmd = body.startsWith(prefix);
+      var budy = typeof mek.text == 'string' ? mek.text : false;
+      const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
+      const args = body.trim().split(/ +/).slice(1);
+      const q = args.join(' ');
+      const text = args.join(' ');
+      const isGroup = from.endsWith('@g.us');
+      const sender = mek.key.fromMe
+  ? conn.user.id
+  : (mek.key.participant ?? mek.key.remoteJid);
+
+if (!sender) return;
+      const senderNumber = sender.split('@')[0];
+      const botNumber = conn.user.id.split(':')[0];
+      const pushname = mek.pushName || 'Sin Nombre';
+      const isMe = botNumber.includes(senderNumber);
+      
+      // IMPORTANT: BOT INSTALLER & CREATOR CHECK
+      // Yeh woh code hai jo aapke original index.js mein tha
+      const isOwner = ownerNumber.includes(senderNumber) || isMe;
+      const isBotInstaller = botInstallers.includes(senderNumber);
+      const isBotCreator = botCreators.includes(senderNumber);
+      
+      // Combined permission check
+      const isSpecialUser = isOwner || isBotInstaller || isBotCreator;
+      
+      const botNumber2 = await jidNormalizedUser(conn.user.id);
+      const groupMetadata = isGroup 
+  ? await conn.groupMetadata(from).catch(() => null) 
+  : null;
+      const groupName = isGroup ? groupMetadata.subject : '';
+      const participants = isGroup && groupMetadata?.participants 
+  ? groupMetadata.participants 
+  : [];
+      const groupAdmins = isGroup ? await getGroupAdmins(participants) : '';
+      const isBotAdmins = isGroup ? groupAdmins.includes(botNumber2) : false;
+      const isAdmins = isGroup ? groupAdmins.includes(sender) : false;
+      const isReact = m.message.reactionMessage ? true : false;
+
+      const reply = (teks) => {
+        conn.sendMessage(from, { text: teks }, { quoted: mek });
+      };
+
+      const udp = botNumber.split(`@`)[0];
+      const Faizan = botCreators; // Bot creators list
+      const dev = botInstallers; // Bot installers list
+
+      // Combined creator check
+      let isCreator = [udp, ...Faizan, ...dev]
+        .map(v => v.replace(/[^0-9]/g, '') + '@s.whatsapp.net')
+        .includes(sender);
+
+      // ================== ANTI-DELETE COMMANDS ==================
+      if (isSpecialUser && command === 'antidelete') {
+        const arg = args[0]?.toLowerCase();
+        
+        if (arg === 'on') {
+          global.antiDeleteSettings.enabled = true;
+          saveAntiDeleteSettings(global.antiDeleteSettings);
+          reply('✅ *Anti-Delete ENABLED*\n\nDeleted messages (text, images, videos, voice, status) will be sent to your DM.');
+        } else if (arg === 'off') {
+          global.antiDeleteSettings.enabled = false;
+          saveAntiDeleteSettings(global.antiDeleteSettings);
+          reply('❌ *Anti-Delete DISABLED*');
+        } else {
+          reply(`*🗑️ ANTI-DELETE STATUS*\n\nCurrent: ${global.antiDeleteSettings.enabled ? '✅ ENABLED' : '❌ DISABLED'}\n\n*Usage:*\n${prefix}antidelete on - Enable\n${prefix}antidelete off - Disable\n\n*Supports:* Text, Images, Videos, Voice, Audio, Stickers, Documents, View-Once, Status`);
+        }
+        return;
+      }
+
+      // ================== AUTO STATUS COMMANDS ==================
+      if (isSpecialUser && command === 'autostatus') {
+        const subCmd = args[0]?.toLowerCase();
+        
+        if (!subCmd) {
+          const viewStatus = global.autoStatusSettings.viewEnabled ? '✅ ON' : '❌ OFF';
+          const reactStatus = global.autoStatusSettings.reactEnabled ? '✅ ON' : '❌ OFF';
+          const replyStatus = global.autoStatusSettings.replyEnabled ? '✅ ON' : '❌ OFF';
+          
+          reply(`*⚙️ AUTO STATUS SETTINGS*\n\n📱 *View:* ${viewStatus}\n💫 *React:* ${reactStatus}\n📩 *Reply:* ${replyStatus}\n\n*Commands:*\n${prefix}autostatus view on/off\n${prefix}autostatus react on/off\n${prefix}autostatus reply on/off`);
+          return;
+        }
+        
+        if (subCmd === 'view') {
+          const action = args[1]?.toLowerCase();
+          if (action === 'on') {
+            global.autoStatusSettings.viewEnabled = true;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('✅ *Auto Status View ENABLED*');
+          } else if (action === 'off') {
+            global.autoStatusSettings.viewEnabled = false;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('❌ *Auto Status View DISABLED*');
+          }
+        } else if (subCmd === 'react') {
+          const action = args[1]?.toLowerCase();
+          if (action === 'on') {
+            global.autoStatusSettings.reactEnabled = true;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('✅ *Auto Status React ENABLED*');
+          } else if (action === 'off') {
+            global.autoStatusSettings.reactEnabled = false;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('❌ *Auto Status React DISABLED*');
+          }
+        } else if (subCmd === 'reply') {
+          const action = args[1]?.toLowerCase();
+          if (action === 'on') {
+            global.autoStatusSettings.replyEnabled = true;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('✅ *Auto Status Reply ENABLED*');
+          } else if (action === 'off') {
+            global.autoStatusSettings.replyEnabled = false;
+            saveAutoStatusSettings(global.autoStatusSettings);
+            reply('❌ *Auto Status Reply DISABLED*');
+          }
+        }
+        return;
+      }
+
+      // ================== STATUS CHECK COMMAND ==================
+      if (isSpecialUser && command === 'status') {
+        const statusInfo = `
+*🤖 BOT STATUS INFO*
+
+✅ *Connection:* ${global.isBotConnected ? 'Connected' : 'Disconnected'}
+🔄 *Auto Status View:* ${global.autoStatusSettings.viewEnabled ? 'ON ✅' : 'OFF ❌'}
+💫 *Auto Status React:* ${global.autoStatusSettings.reactEnabled ? 'ON ✅' : 'OFF ❌'}
+🗑️ *Anti-Delete:* ${global.antiDeleteSettings.enabled ? 'ON ✅' : 'OFF ❌'}
+
+*⚙️ Settings:*
+- Reaction Chance: ${global.autoStatusSettings.randomChance || 100}%
+- Reaction Interval: ${global.autoStatusSettings.reactionInterval || 1} minutes
+- Emojis: ${global.autoStatusSettings.customEmojis?.length || 5} emojis
+
+*📊 Stats:*
+- Cached Messages: ${global.messageCache.size}
+- Stored Messages: ${messageStore.size}
+- Temp Files: ${fs.existsSync(TEMP_MEDIA_DIR) ? fs.readdirSync(TEMP_MEDIA_DIR).length : 0}
+
+*User Permissions:*
+- Owner: ${isOwner ? '✅ Yes' : '❌ No'}
+- Bot Installer: ${isBotInstaller ? '✅ Yes' : '❌ No'} 
+- Bot Creator: ${isBotCreator ? '✅ Yes' : '❌ No'}
+
+*Commands:*
+${prefix}autostatus view on/off
+${prefix}autostatus react on/off
+${prefix}antidelete on/off
+        `;
+        reply(statusInfo);
+        return;
+      }
+
+      // ================== WHOAMI COMMAND (DEBUG) ==================
+      if (isSpecialUser && command === 'whoami') {
+        const userInfo = `
+*👤 USER INFORMATION*
+
+📱 *Number:* ${senderNumber}
+👤 *Name:* ${pushname}
+💬 *Chat:* ${isGroup ? 'Group' : 'Private'}
+
+*🔐 PERMISSIONS:*
+- Bot Owner: ${isOwner ? '✅ Yes' : '❌ No'}
+- Bot Installer: ${isBotInstaller ? '✅ Yes' : '❌ No'}
+- Bot Creator: ${isBotCreator ? '✅ Yes' : '❌ No'}
+- Group Admin: ${isGroup ? (isAdmins ? '✅ Yes' : '❌ No') : 'N/A'}
+
+*📞 Phone Numbers:*
+- Owner Numbers: ${ownerNumber.join(', ')}
+- Installer Numbers: ${botInstallers.join(', ')}
+- Creator Numbers: ${botCreators.join(', ')}
+        `;
+        reply(userInfo);
+        return;
+      }
+
+      // SHELL & EVAL COMMANDS (Only for special users)
+      if (isSpecialUser && mek.text.startsWith('%')) {
+        let code = budy.slice(2);
+        if (!code) {
+          reply(`Provide me with a query to run Master!`);
+          return;
+        }
+        try {
+          let resultTest = eval(code);
+          if (typeof resultTest === 'object')
+            reply(util.format(resultTest));
+          else reply(util.format(resultTest));
+        } catch (err) {
+          reply(util.format(err));
+        }
+        return;
+      }
+
+      if (isSpecialUser && mek.text.startsWith('$')) {
+        let code = budy.slice(2);
+        if (!code) {
+          reply(`Provide me with a query to run Master!`);
+          return;
+        }
+        try {
+          let resultTest = await eval(
+            'const a = async()=>{\n' + code + '\n}\na()',
+          );
+          let h = util.format(resultTest);
+          if (h === undefined) return console.log(h);
+          else reply(h);
+        } catch (err) {
+          if (err === undefined)
+            return console.log('error');
+          else reply(util.format(err));
+        }
+        return;
+      }
+
+      // OWNER REACT (Special users ke liye)
+      if (isSpecialUser && !isReact) {
+        const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "🇵🇰", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
+        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+        m.react(randomReaction);
+      }
+
+      // AUTO REACT
+      if (!isReact && config.AUTO_REACT === 'true') {
+        const reactions = [
+          '🌼', '❤️', '💐', '🔥', '🏵️', '❄️', '🧊', '🐳', '💥', '🥀', '❤‍🔥', '🥹', '😩', '🫣', 
+          '🤭', '👻', '👾', '🫶', '😻', '🙌', '🫂', '🫀', '👩‍🦰', '🧑‍🦰', '👩‍⚕️', '🧑‍⚕️', '🧕', 
+          '👩‍🏫', '👨‍💻', '👰‍♀', '🦹🏻‍♀️', '🧟‍♀️', '🧟', '🧞‍♀️', '🧞', '🙅‍♀️', '💁‍♂️', '💁‍♀️', '🙆‍♀️', 
+          '🙋‍♀️', '🤷', '🤷‍♀️', '🤦', '🤦‍♀️', '💇‍♀️', '💇', '💃', '🚶‍♀️', '🚶', '🧶', '🧤', '👑', 
+          '💍', '👝', '💼', '🎒', '🥽', '🐻', '🐼', '🐭', '🐣', '🪿', '🦆', '🦊', '🦋', '🦄', 
+          '🪼', '🐋', '🐳', '🦈', '🐍', '🕊️', '🦦', '🦚', '🌱', '🍃', '🎍', '🌿', '☘️', '🍀', 
+          '🍁', '🪺', '🍄', '🍄‍🟫', '🪸', '🪨', '🌺', '🪷', '🪻', '🥀', '🌹', '🌷', '💐', '🌾', 
+          '🌸', '🌼', '🌻', '🌝', '🌚', '🌕', '🌎', '💫', '🔥', '☃️', '❄️', '🌨️', '🫧', '🍟', 
+          '🍫', '🧃', '🧊', '🪀', '🤿', '🏆', '🥇', '🥈', '🥉', '🎗️', '🤹', '🤹‍♀️', '🎧', '🎤', 
+          '🥁', '🧩', '🎯', '🚀', '🚁', '🗿', '🎙️', '⌛', '⏳', '💸', '💎', '⚙️', '⛓️', '🔪', 
+          '🧸', '🎀', '🪄', '🎈', '🎁', '🎉', '🏮', '🪩', '📩', '💌', '📤', '📦', '📊', '📈', 
+          '📑', '📉', '📂', '🔖', '🧷', '📌', '📝', '🔏', '🔐', '🩷', '❤️', '🧡', '💛', '💚', 
+          '🩵', '💙', '💜', '🖤', '🩶', '🤍', '🤎', '❤‍🔥', '❤‍🩹', '💗', '💖', '💘', '💝', '❌', 
+          '✅', '🔰', '〽️', '🌐', '🌀', '⤴️', '⤵️', '🔴', '🟢', '🟡', '🟠', '🔵', '🟣', '⚫', 
+          '⚪', '🟤', '🔇', '🔊', '📢', '🔕', '♥️', '🕐', '🚩', '🇵🇰'
+        ];
+        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+        m.react(randomReaction);
+      }
+
+      // CUSTOM REACT
+      if (!isReact && config.CUSTOM_REACT === 'true') {
+        const reactions = (config.CUSTOM_REACT_EMOJIS || '🥲,😂,👍🏻,🙂,😔').split(',');
+        const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+        m.react(randomReaction);
+      }
+
+      // MODE CHECK - Ab special users ke liye alag se check
+      if(!isSpecialUser && config.MODE === "private") return;
+      if(!isSpecialUser && isGroup && config.MODE === "inbox") return;
+      if(!isSpecialUser && !isGroup && config.MODE === "groups") return;
+
+      // COMMAND HANDLER
+      const events = require('./command');
+      const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
+      
+      if (isCmd) {
+        const cmd = events.commands.find((cmd) => cmd.pattern === (cmdName)) || events.commands.find((cmd) => cmd.alias && cmd.alias.includes(cmdName));
+        if (cmd) {
+          if (cmd.react) conn.sendMessage(from, { react: { text: cmd.react, key: mek.key }});
+          
+          try {
+            cmd.function(conn, mek, m,{
+              from, quoted, body, isCmd, command, args, q, text, isGroup, 
+              sender, senderNumber, botNumber2, botNumber, pushname, 
+              isMe, isOwner: isSpecialUser, // Changed to isSpecialUser
+              isCreator: isCreator, 
+              isBotInstaller, // Added
+              isBotCreator, // Added
+              isSpecialUser, // Added
+              groupMetadata, groupName, participants, groupAdmins, 
+              isBotAdmins, isAdmins, reply
+            });
+          } catch (e) {
+            log("[PLUGIN ERROR] " + e, 'red', true);
+          }
+        }
+      }
+
+      events.commands.map(async(command) => {
+        if (body && command.on === "body") {
+          command.function(conn, mek, m,{
+            from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
+            sender, senderNumber, botNumber2, botNumber, pushname, 
+            isMe, isOwner: isSpecialUser, 
+            isCreator, 
+            isBotInstaller,
+            isBotCreator,
+            isSpecialUser,
+            groupMetadata, groupName, participants, groupAdmins, 
+            isBotAdmins, isAdmins, reply
+          });
+        } else if (mek.q && command.on === "text") {
+          command.function(conn, mek, m,{
+            from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
+            sender, senderNumber, botNumber2, botNumber, pushname, 
+            isMe, isOwner: isSpecialUser, 
+            isCreator, 
+            isBotInstaller,
+            isBotCreator,
+            isSpecialUser,
+            groupMetadata, groupName, participants, groupAdmins, 
+            isBotAdmins, isAdmins, reply
+          });
+        } else if ((command.on === "image" || command.on === "photo") && mek.type === 
+// ==================== CONNECTION LOGIC ====================
 const sessionDir = path.join(__dirname, 'sessions');
 
 async function connectToWA() {
-  log('[⚡] ADEEL-MD³⁰³ Connecting to WhatsApp ⏳️...', 'cyan');
+  log('Connecting to WhatsApp...', 'cyan');
   
   const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
   const { version } = await fetchLatestBaileysVersion();
   
   const conn = makeWASocket({
     logger: P({ level: 'silent' }),
-    printQRInTerminal: false,
     browser: Browsers.macOS("Firefox"),
     auth: {
       creds: state.creds,
       keys: makeCacheableSignalKeyStore(state.keys, P({ level: 'silent' }))
     },
-    version,
-    connectTimeoutMs: 60000,
-    keepAliveIntervalMs: 15000,
+    version
   });
 
   conn.ev.on('connection.update', async (update) => {
     const { connection, lastDisconnect } = update;
     
     if (connection === 'close') {
-      global.isBotConnected = false;
       const statusCode = new Boom(lastDisconnect?.error)?.output?.statusCode;
-      
-      log(`[⚡] Connection closed: ${statusCode}. Reconnecting...`, 'yellow');
+      log(`Connection closed: ${statusCode}`, 'yellow');
 
-      // ERROR 440 HANDLED HERE - FIXED OFF ISSUE
-      if (statusCode === DisconnectReason.connectionClosed || 
-          statusCode === DisconnectReason.connectionLost || 
-          statusCode === 440 || 
-          statusCode === 408 ||
-          statusCode === DisconnectReason.timedOut) {
-        
-        log('[♻️] Retrying in 5 seconds...', 'green');
+      if (statusCode === 440 || statusCode === 408 || statusCode === DisconnectReason.connectionLost) {
+        log('Retrying in 5 seconds...', 'green');
         setTimeout(() => connectToWA(), 5000);
-
       } else if (statusCode === DisconnectReason.loggedOut) {
-        log('[❌] Logged Out. Please scan again.', 'red');
-        process.exit(1);
-
-      } else if (statusCode === DisconnectReason.connectionReplaced) {
-        log('[❌] Session conflict. Restarting in 10s...', 'cyan');
-        setTimeout(() => connectToWA(), 10000);
-
+        log('Logged out! Scan again.', 'red');
       } else {
-        log('[⚠️] Restarting due to other error...', 'white');
-        setTimeout(() => connectToWA(), 3000);
+        setTimeout(() => connectToWA(), 5000);
       }
     } else if (connection === 'open') {
-      global.isBotConnected = true;
-      log('Bot connected to whatsapp ✅', 'green');
-      conn.sendMessage(conn.user.id, { text: "✅ ADEEL-MD³⁰³ IS NOW ONLINE!" });
+      log('Bot connected successfully! ✅', 'green');
     }
   });
 
   conn.ev.on('creds.update', saveCreds);
-
-  // Status viewer logic
-  conn.ev.on('messages.upsert', async (mek) => {
-    const msg = mek.messages[0];
-    if (!msg.message) return;
-    if (msg.key.remoteJid === 'status@broadcast' && config.AUTO_STATUS_SEEN === 'true') {
-      await conn.readMessages([msg.key]);
-      log(`✅ Status Seen: ${msg.key.participant.split('@')[0]}`, 'green');
-    }
-  });
-
-  // REST OF YOUR ORIGINAL MESSAGE HANDLER LOGIC...
-  // (Yeh code aapke original commands ko support karega)
-
   return conn;
 }
 
-// EXPRESS SERVER FOR UPTIME
+// EXPRESS SERVER
 const express = require("express");
 const app = express();
-app.get("/", (req, res) => res.send("ADEEL-MD³⁰³ IS RUNNING"));
+app.get("/", (req, res) => res.send("ADEEL-MD³⁰³ ACTIVE"));
 app.listen(process.env.PORT || 9090);
 
 // START
