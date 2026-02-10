@@ -673,7 +673,7 @@ if (!fs.existsSync(sessionDir)) {
 
 if (!fs.existsSync(credsPath)) {
   if (config.SESSION_ID && config.SESSION_ID.trim() !== "") {
-    const sessdata = config.SESSION_ID.replace("ADEEL-XMD~", '');
+    const sessdata = config.SESSION_ID.replace("MAFIA-MD~", '');
     try {
       const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
       fs.writeFileSync(credsPath, decodedData);
