@@ -1,7 +1,6 @@
 /**
- * MAFIA ADEEL Bot - Original Fixed
- * © 2026 Adeel Botz
- * Saare features (Newsletter, Auto Status, Anti-Delete) Barkarar hain.
+ * MAFIA ADEEL Bot - Original Fixed & Optimized
+ * Saare Features: Newsletter, Auto Status, Anti-Delete Shamil Hain.
  */
 
 const config = require('./config');
@@ -40,7 +39,7 @@ const { sms } = require('./lib');
 const FileType = require('file-type');
 const { Boom } = require('@hapi/boom');
 
-// ==================== GLOBAL CONFIG & PATHS (FIXED DUPLICATES) ====================
+// ==================== GLOBAL CONFIG (FIXED DUPLICATES) ====================
 const MESSAGE_STORE_FILE = path.join(__dirname, 'message_backup.json');
 const SESSION_ERROR_FILE = path.join(__dirname, 'sessionErrorCount.json');
 const ANTIDELETE_SETTINGS_FILE = path.join(__dirname, 'antidelete_settings.json');
@@ -53,9 +52,8 @@ if (!fs.existsSync(TEMP_MEDIA_DIR)) {
 
 global.isBotConnected = false;
 global.messageCache = new Map();
-const messageStore = new Map();
 
-// ==================== CENTRALIZED LOGGING ====================
+// ==================== LOGGING ====================
 function log(message, color = 'white', isError = false) {
   const prefix = chalk.blue.bold('[ ADEEL-MD³⁰³ ]');
   const logFunc = isError ? console.error : console.log;
@@ -76,35 +74,26 @@ global.autoStatusSettings = loadSettings(AUTOSTATUS_SETTINGS_FILE, {
   viewEnabled: config.AUTO_STATUS_SEEN === "true",
   reactEnabled: config.AUTO_STATUS_REACT === "true",
   replyEnabled: config.AUTO_STATUS_REPLY === "true",
-  customEmojis: ['❤️', '🔥', '✨', '🙌', '💯', '👑', '💸']
+  customEmojis: ['❤️', '🔥', '✨', '🙌', '💯', '👑', '✅']
 });
 
 // ==================== SESSION & TEMP CLEANUP ====================
 const sessionDir = path.join(__dirname, 'sessions');
-const credsPath = path.join(sessionDir, 'creds.json');
 if (!fs.existsSync(sessionDir)) fs.mkdirSync(sessionDir, { recursive: true });
 
 const tempDir = path.join(os.tmpdir(), 'cache-temp');
 if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
 
-if (!fs.existsSync(credsPath) && config.SESSION_ID) {
-    const sessdata = config.SESSION_ID.replace("ADEEL-XMD~", '');
-    try {
-      const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
-      fs.writeFileSync(credsPath, decodedData);
-      log("✅ Session loaded from SESSION_ID", 'green');
-    } catch (err) {
-      log("❌ Error decoding session data", 'red', true);
-    }
-}
-
 // ==================== MAIN CONNECTION ====================
 async function connectToWA() {
+  log('[⚡] ADEEL-MD³⁰³ Connecting to WhatsApp...', 'cyan');
+  
   const { state, saveCreds } = await useMultiFileAuthState(sessionDir);
   const { version } = await fetchLatestBaileysVersion();
   
   const conn = makeWASocket({
     logger: P({ level: 'silent' }),
+    printQRInTerminal: true,
     browser: Browsers.macOS("Firefox"),
     auth: {
       creds: state.creds,
@@ -117,19 +106,20 @@ async function connectToWA() {
     const { connection, lastDisconnect } = update;
     if (connection === 'close') {
       const statusCode = new Boom(lastDisconnect?.error)?.output?.statusCode;
+      log(`Connection closed: ${statusCode}. Reconnecting...`, 'yellow');
       if (statusCode !== DisconnectReason.loggedOut) {
-        log('Reconnecting...', 'yellow');
         setTimeout(connectToWA, 5000);
       }
     } else if (connection === 'open') {
       log('Bot connected successfully! ✅', 'green');
       global.isBotConnected = true;
       
+      // Plugins Loading
       const pluginPath = path.join(__dirname, 'plugins');
       if (fs.existsSync(pluginPath)) {
         fs.readdirSync(pluginPath).forEach(file => {
           if (file.endsWith(".js")) {
-             try { require(path.join(pluginPath, file)); } catch(e) {}
+             try { require(path.join(pluginPath, file)); } catch(e) { log(`Error in ${file}: ${e.message}`, 'red'); }
           }
         });
       }
@@ -138,18 +128,17 @@ async function connectToWA() {
 
   conn.ev.on('creds.update', saveCreds);
 
-  // ==================== MESSAGE LOGIC (ALL FEATURES) ====================
+  // ==================== MESSAGE LOGIC ====================
   conn.ev.on('messages.upsert', async (mek) => {
     try {
       if (!mek.messages[0].message) return;
       const m = sms(conn, mek.messages[0]);
       const from = m.key.remoteJid;
 
-      // 1. AUTO STATUS VIEW & REACT (Original Logic)
+      // 1. AUTO STATUS VIEW & REACT
       if (from === 'status@broadcast') {
         if (global.autoStatusSettings.viewEnabled) {
           await conn.readMessages([m.key]);
-          log(`Status seen from: ${m.key.participant.split('@')[0]}`, 'cyan');
         }
         if (global.autoStatusSettings.reactEnabled) {
           const emoji = global.autoStatusSettings.customEmojis[Math.floor(Math.random() * global.autoStatusSettings.customEmojis.length)];
@@ -158,12 +147,11 @@ async function connectToWA() {
         return;
       }
 
-      // 2. NEWSLETTER REACT (Original Logic)
+      // 2. NEWSLETTER REACT
       const newsletterJids = ["120363423571792427@newsletter", "120363374872240664@newsletter"];
       if (newsletterJids.includes(from) && mek.messages[0].newsletterServerId) {
-          const emojis = ["❤️", "✨", "🔥", "🌸", "🪄"];
-          const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-          await conn.newsletterReactMessage(from, mek.messages[0].newsletterServerId.toString(), emoji);
+          const emojis = ["❤️", "✨", "🔥", "🌸", "👑"];
+          await conn.newsletterReactMessage(from, mek.messages[0].newsletterServerId.toString(), emojis[Math.floor(Math.random() * emojis.length)]);
       }
 
       // 3. COMMAND HANDLER
@@ -177,15 +165,14 @@ async function connectToWA() {
           cmd.function(conn, mek.messages[0], m, { from, body, isCmd, reply: (t) => conn.sendMessage(from, { text: t }, { quoted: m }) });
         }
       }
-
-    } catch (e) { log("Msg Error: " + e.message, 'red'); }
+    } catch (e) { }
   });
 }
 
 // Keep-Alive Server
 const express = require("express");
-const server = express();
-server.get("/", (req, res) => res.send("ADEEL-MD³⁰³ IS ONLINE ✅"));
-server.listen(process.env.PORT || 9090);
+const app = express();
+app.get("/", (req, res) => res.send("ADEEL-MD³⁰³ ONLINE"));
+app.listen(process.env.PORT || 9090);
 
 connectToWA();
