@@ -1813,10 +1813,6 @@ ${prefix}antidelete on/off
 }
 
 // =================== EXPRESS SERVER ===================
-const express = require("express");
-const app = express();
-const port = process.env.PORT || 9090;
-
 app.disable('x-powered-by');
 app.disable('etag');
 
