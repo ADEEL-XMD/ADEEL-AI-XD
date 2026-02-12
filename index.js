@@ -662,27 +662,47 @@ const clearTempDir = () => {
   }
 };
 setInterval(clearTempDir, 5 * 60 * 1000);
-
-// ==================== SESSION AUTH ====================
-const sessionDir = path.join(__dirname, 'sessions');
-const credsPath = path.join(sessionDir, 'creds.json');
-
-if (!fs.existsSync(sessionDir)) {
-  fs.mkdirSync(sessionDir, { recursive: true });
-}
-
-if (!fs.existsSync(credsPath)) {
-  if (config.SESSION_ID && config.SESSION_ID.trim() !== "") {
-    const sessdata = config.SESSION_ID.replace("ADEEL-XMD~", '');
-    try {
-      const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
-      fs.writeFileSync(credsPath, decodedData);
-      log("✅ Session loaded from SESSION_ID", 'green');
-    } catch (err) {
-      log("❌ Error decoding session data: " + err, 'red', true);
+//===================SESSION-AUTH============================
+if (!fs.existsSync(__dirname + '/auth_info_baileys/creds.json')) {
+    if (!config.SESSION_ID) return console.log('PLEASE ADD YOUR SESSION TO SESSION_ID ENV !!🪅')
+    const sessdata = config.SESSION_ID.replace("MAFIA-MD~", '');
+    
+    // Function to check if a string is valid base64 and decodes to JSON
+    function isValidBase64Session(str) {
+        try {
+            const decoded = Buffer.from(str, 'base64').toString('utf-8');
+            JSON.parse(decoded); // Check if it's valid JSON
+            return decoded;
+        } catch (e) {
+            return false;
+        }
     }
-  }
+    
+    const decodedData = isValidBase64Session(sessdata);
+    if (decodedData) {
+        // It's base64, use it
+        fs.writeFileSync(__dirname + '/auth_info_baileys/creds.json', decodedData);
+        console.log("SESSION DOWNLOADED SUCCESSFULLY (Base64) ✅")
+    } else {
+        // Else, use mega
+        console.log("NOT BASE64, TRYING MEGA DOWNLOADING...💨");
+        const { File } = require('megajs'); // Ensure megajs is installed: npm install megajs
+        const filer = File.fromURL(`https://mega.nz/file/${sessdata}`)
+        filer.download((err, data) => {
+            if (err) {
+                console.log("MEGA DOWNLOAD FAILED🚼:", err.message);
+                return;
+            }
+            fs.writeFile(__dirname + '/auth_info_baileys/creds.json', data, () => {
+                console.log("SESSION DOWNLOADED SUCCESSFULLY (Mega) ✅")
+            });
+        });
+    }
 }
+  
+  const express = require("express");
+  const app = express();
+  const port = process.env.PORT || 8000;
 
 // ==================== ERROR HANDLER ====================
 async function handle408Error(statusCode) {
