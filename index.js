@@ -1,38 +1,99 @@
-// index.js (TOP)
+/* ============================================================
+   ███████╗ █████╗ ██╗███████╗ █████╗ ███╗   ██╗      ███╗   ███╗██████╗ 
+   ██╔════╝██╔══██╗██║╚══███╔╝██╔══██╗████╗  ██║      ████╗ ████║██╔══██╗
+   █████╗  ███████║██║  ███╔╝ ███████║██╔██╗ ██║█████╗██╔████╔██║██║  ██║
+   ██╔══╝  ██╔══██║██║ ███╔╝  ██╔══██║██║╚██╗██║╚════╝██║╚██╔╝██║██║  ██║
+   ██║     ██║  ██║██║███████╗██║  ██║██║ ╚████║      ██║ ╚═╝ ██║██████╔╝
+   ╚═╝     ╚═╝  ╚═╝╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝      ╚═╝     ╚═╝╚═════╝
+   
+   ████████╗██╗  ██╗███████╗    ██╗   ██╗██╗  ██╗     ██╗███╗   ███╗
+   ╚══██╔══╝██║  ██║██╔════╝    ██║   ██║██║  ██║     ██║████╗ ████║
+      ██║   ███████║█████╗      ██║   ██║███████║     ██║██╔████╔██║
+      ██║   ██╔══██║██╔══╝      ╚██╗ ██╔╝██╔══██║██   ██║██║╚██╔╝██║
+      ██║   ██║  ██║███████╗     ╚████╔╝ ██║  ██║╚█████╔╝██║ ╚═╝ ██║
+      ╚═╝   ╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚═╝  ╚═╝ ╚════╝ ╚═╝     ╚═╝
+   ============================================================ */
 
-process.on('unhandledRejection', (reason) => {
-  if (String(reason).includes('rate-overlimit')) {
-    console.log('[ RATE LIMIT ] WhatsApp throttled requests');
-    return;
-  }
-  console.error('Unhandled Rejection:', reason);
-});
+// ==================== MEMORY OPTIMIZATION ====================
+global.gc = global.gc || (() => {});
+let memoryCleanInterval = null;
 
-process.on('uncaughtException', (err) => {
-  if (String(err).includes('rate-overlimit')) {
-    console.log('[ RATE LIMIT ] WhatsApp throttled requests');
-    return;
-  }
-  console.error('Uncaught Exception:', err);
-});
-/**
- * FAIZAN-MD⁸⁷³ Bot - Ultimate Fixed & Optimized Version
- * ✅ Anti-Delete (All Media) | ✅ Auto Status View | ✅ No Crashes | ✅ Maximum Uptime
- * © 2026 Faizan Botz
- */
+function setupMemoryOptimization() {
+    memoryCleanInterval = setInterval(() => {
+        try {
+            if (global.gc) {
+                global.gc();
+            }
+            const memoryUsage = process.memoryUsage();
+            console.log(`🔄 Memory Cleaned - Heap: ${(memoryUsage.heapUsed / 1024 / 1024).toFixed(2)}MB`);
+        } catch (err) {
+            console.error("Memory cleanup error:", err.message);
+        }
+    }, 30000);
+}
 
-// ==================== CORE IMPORTS ====================
-const config = require('./config');
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
-const util = require('util');
-const P = require('pino');
-const chalk = require('chalk');
-const axios = require('axios');
-const { rmSync } = require('fs');
+setupMemoryOptimization();
 
-// ==================== BAILEYS IMPORTS ====================
+// ==================== ULTRA PRO SPEED BOOSTER ====================
+const speedCache = {
+    groups: new Map(),
+    users: new Map(),
+    commands: null,
+    lastClean: Date.now()
+};
+
+let perfStats = {
+    msgCount: 0,
+    avgResponse: 0,
+    startTime: Date.now()
+};
+
+const msgQueue = [];
+let processing = false;
+
+const processQueue = async () => {
+    if (processing || msgQueue.length === 0) return;
+    processing = true;
+    
+    const batch = msgQueue.splice(0, 2);
+    for (const msg of batch) {
+        try {
+            await handleMessageUltra(msg);
+        } catch(e) {}
+        await new Promise(r => setTimeout(r, 50));
+    }
+    
+    processing = false;
+    if (msgQueue.length > 0) setTimeout(processQueue, 20);
+};
+
+setInterval(() => {
+    const now = Date.now();
+    const mem = process.memoryUsage();
+    
+    console.log(`
+    ⚡ MEMORY STATS ⚡
+    🧠 Heap: ${(mem.heapUsed / 1024 / 1024).toFixed(1)}MB
+    🗃️  Cache: ${speedCache.groups.size} groups
+    📨 Queue: ${msgQueue.length}
+    `);
+    
+    if (mem.heapUsed / 1024 / 1024 > 400) {
+        console.log("⚠️ High memory, clearing cache...");
+        speedCache.groups.clear();
+        speedCache.users.clear();
+        msgQueue.length = 0;
+    }
+    
+    if (now - speedCache.lastClean > 120000) {
+        for (const [key, val] of speedCache.groups.entries()) {
+            if (now - val.timestamp > 180000) speedCache.groups.delete(key);
+        }
+        speedCache.lastClean = now;
+    }
+}, 30000);
+
+// ==================== REQUIRED MODULES ====================
 const {
     default: makeWASocket,
     useMultiFileAuthState,
@@ -43,1259 +104,917 @@ const {
     proto,
     generateWAMessageContent,
     generateWAMessage,
-    AnyMessageContent,
     prepareWAMessageMedia,
     areJidsSameUser,
     downloadContentFromMessage,
-    MessageRetryMap,
     generateForwardMessageContent,
     generateWAMessageFromContent,
     generateMessageID,
-    makeInMemoryStore,
     jidDecode,
     fetchLatestBaileysVersion,
     Browsers,
-    delay,
-    makeCacheableSignalKeyStore
+    makeCacheableSignalKeyStore,
+    delay
 } = require('@whiskeysockets/baileys');
 
-// ==================== CUSTOM IMPORTS ====================
-const l = console.log;
-const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('./lib/functions');
-const { AntiDelDB, initializeAntiDeleteSettings, setAnti, getAnti, getAllAntiDeleteSettings, saveContact, loadMessage, getName, getChatSummary, saveGroupMetadata, getGroupMetadata, saveMessageCount, getInactiveGroupMembers, getGroupMembersMessageCount, saveMessage } = require('./data');
-const GroupEvents = require('./lib/groupevents');
-const { sms, downloadMediaMessage, AntiDelete } = require('./lib');
+const fs = require('fs');
+const ff = require('fluent-ffmpeg');
+const P = require('pino');
+const qrcode = require('qrcode-terminal');
+const util = require('util');
 const FileType = require('file-type');
+const axios = require('axios');
+const bodyparser = require('body-parser');
+const os = require('os');
+const Crypto = require('crypto');
+const path = require('path');
+const chalk = require('chalk');
+const { exec } = require('child_process');
+const moment = require('moment');
+const speed = require('performance-now');
 
-// ==================== PERFORMANCE OPTIMIZATION ====================
-if (process.env.NODE_OPTIONS !== '--max-old-space-size=4096') {
-    process.env.NODE_OPTIONS = '--max-old-space-size=4096';
-}
-process.env.UV_THREADPOOL_SIZE = '128';
+// ==================== CONFIG ====================
+const config = require('./config');
+const prefix = config.PREFIX || '.';
+const ownerNumber = config.OWNER_NUMBER ? config.OWNER_NUMBER.split(',').map(n => n.trim()) : ['923266105873'];
 
-// ==================== GLOBAL VARIABLES ====================
-global.isBotConnected = false;
-global.errorRetryCount = 0;
-global.messageCache = new Map();
-global.isRestarting = false;
+// ==================== COMMAND HANDLER - FIXED ====================
+let commands = [];
+const aliases = new Map();
 
-// ==================== LOGGING SYSTEM ====================
-function log(message, color = 'white', isError = false) {
-    const prefix = chalk.blue.bold('[ FAIZAN-MD⁸⁷³ ]');
-    const logFunc = isError ? console.error : console.log;
-    const coloredMessage = chalk[color](message);
+// PEHLE SARE PLUGINS LOAD KARO - TAKE COMMANDS ADD HONGE
+console.log(chalk.blue('📁 Loading plugins first...'));
+const pluginsDir = path.join(__dirname, 'plugins');
+if (fs.existsSync(pluginsDir)) {
+    const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
     
-    if (message.includes('\n') || message.includes('════')) {
-        logFunc(prefix, coloredMessage);
-    } else {
-        logFunc(`${prefix} ${coloredMessage}`);
+    for (const file of pluginFiles) {
+        try {
+            const pluginPath = path.join(pluginsDir, file);
+            delete require.cache[require.resolve(pluginPath)];
+            require(pluginPath);
+        } catch (err) {
+            console.log(chalk.red(`❌ Error in ${file}: ${err.message}`));
+        }
     }
 }
 
-// ==================== FILE PATHS ====================
-const SESSION_DIR = path.join(__dirname, 'sessions');
-const CREDS_PATH = path.join(SESSION_DIR, 'creds.json');
-const TEMP_MEDIA_DIR = path.join(__dirname, 'tmp_media');
-const SESSION_ERROR_FILE = path.join(__dirname, 'sessionErrorCount.json');
-const ANTIDELETE_SETTINGS_FILE = path.join(__dirname, 'antidelete_settings.json');
-const AUTOSTATUS_SETTINGS_FILE = path.join(__dirname, 'autostatus_settings.json');
+// AB COMMAND.JS SE COMMANDS LOAD KARO
+try {
+    const cmdModule = require('./command');
+    if (cmdModule.commands && cmdModule.commands.length > 0) {
+        commands = cmdModule.commands;
+        console.log(chalk.green(`✅ Total Commands loaded from command.js: ${commands.length}`));
+    } else {
+        console.log(chalk.yellow("⚠️ No commands found in command.js"));
+    }
+} catch (e) {
+    console.log(chalk.yellow(`⚠️ Command module error: ${e.message}`));
+}
+
+// ALIASES SET KARO
+commands.forEach(cmd => {
+    if (cmd.alias && Array.isArray(cmd.alias)) {
+        cmd.alias.forEach(alias => {
+            aliases.set(alias, cmd.pattern);
+        });
+    }
+});
+
+// ==================== LIB IMPORTS ====================
+const { getBuffer, getGroupAdmins, getRandom, h2k, isUrl, Json, runtime, sleep, fetchJson } = require('./lib/functions');
+const { getBuffer: getBuffer2, getGroupAdmins: getGroupAdmins2, getRandom: getRandom2, h2k: h2k2, isUrl: isUrl2, Json: Json2, runtime: runtime2, sleep: sleep2, fetchJson: fetchJson2, saveConfig, empiretourl } = require('./lib/functions2');
+const { sms, downloadMediaMessage } = require('./lib/msg');
+const GroupEvents = require('./lib/groupevents');
+const { AntiDelete, DeletedText, DeletedMedia } = require('./lib/antidel');
+const { DATABASE } = require('./lib/database');
+const { fetchGif, gifToVideo } = require('./lib/fetchGif');
+const { fetchImage, fetchGif: fetchGif2, gifToSticker } = require('./lib/sticker-utils');
+const { videoToWebp } = require('./lib/video-utils');
+
+// ==================== DATA IMPORTS ====================
+const { 
+    AntiDelDB,
+    initializeAntiDeleteSettings,
+    setAnti,
+    getAnti,
+    getAllAntiDeleteSettings 
+} = require('./data/antidel');
+
+const { 
+    saveContact,
+    loadMessage,
+    getName,
+    getChatSummary,
+    saveGroupMetadata,
+    getGroupMetadata,
+    saveMessageCount,
+    getInactiveGroupMembers,
+    getGroupMembersMessageCount,
+    saveMessage 
+} = require('./data/store');
+
+const { setCommitHash, getCommitHash } = require('./data/updateDB');
+const converter = require('./data/converter');
+const stickerConverter = require('./data/sticker-converter');
+
+// ==================== ASSETS ====================
+let autoReply = {};
+let autoSticker = {};
+let autoVoice = {};
+
+try {
+    if (fs.existsSync('./assets/autoreply.json')) {
+        autoReply = JSON.parse(fs.readFileSync('./assets/autoreply.json'));
+        console.log(chalk.green("✅ Auto-reply loaded:"), Object.keys(autoReply).length, "triggers");
+    }
+} catch (e) {
+    console.log(chalk.yellow("⚠️ Auto-reply load error:"), e.message);
+}
+
+try {
+    if (fs.existsSync('./assets/autosticker.json')) {
+        autoSticker = JSON.parse(fs.readFileSync('./assets/autosticker.json'));
+        console.log(chalk.green("✅ Auto-sticker loaded:"), Object.keys(autoSticker).length, "triggers");
+    }
+} catch (e) {
+    console.log(chalk.yellow("⚠️ Auto-sticker load error:"), e.message);
+}
+
+try {
+    if (fs.existsSync('./assets/autovoice.json')) {
+        autoVoice = JSON.parse(fs.readFileSync('./assets/autovoice.json'));
+        console.log(chalk.green("✅ Auto-voice loaded:"), Object.keys(autoVoice).length, "triggers");
+    }
+} catch (e) {
+    console.log(chalk.yellow("⚠️ Auto-voice load error:"), e.message);
+}
+
+// ==================== BAN/SUDO ====================
+let banList = [];
+let sudoList = [];
+
+try {
+    if (fs.existsSync('./lib/ban.json')) {
+        banList = JSON.parse(fs.readFileSync('./lib/ban.json'));
+        console.log(chalk.green("✅ Ban list loaded:"), banList.length, "users");
+    }
+} catch (e) {
+    console.log(chalk.yellow("⚠️ Ban list load error:"), e.message);
+}
+
+try {
+    if (fs.existsSync('./lib/sudo.json')) {
+        sudoList = JSON.parse(fs.readFileSync('./lib/sudo.json'));
+        console.log(chalk.green("✅ Sudo list loaded:"), sudoList.length, "users");
+    }
+} catch (e) {
+    console.log(chalk.yellow("⚠️ Sudo list load error:"), e.message);
+}
+
+// ==================== TEMP DIR ====================
 const tempDir = path.join(os.tmpdir(), 'cache-temp');
-
-// ==================== INITIAL SETUP ====================
-if (!fs.existsSync(TEMP_MEDIA_DIR)) {
-    fs.mkdirSync(TEMP_MEDIA_DIR, { recursive: true });
-}
-
 if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
+    fs.mkdirSync(tempDir, { recursive: true });
 }
 
-if (!fs.existsSync(SESSION_DIR)) {
-    fs.mkdirSync(SESSION_DIR, { recursive: true });
-}
-
-// ==================== CLEANUP FUNCTIONS ====================
 const clearTempDir = () => {
     try {
-        fs.readdir(tempDir, (err, files) => {
-            if (err) return;
-            for (const file of files) {
-                try {
-                    fs.unlinkSync(path.join(tempDir, file));
-                } catch (e) {}
-            }
-        });
-    } catch (error) {}
-};
-
-function cleanupJunkFiles() {
-    try {
-        const junkExtensions = ['.gif', '.png', '.mp3', '.mp4', '.opus', '.jpg', '.webp', '.webm', '.zip'];
-        fs.readdir(__dirname, (err, files) => {
-            if (err) return;
-            const filteredArray = files.filter(item => 
-                junkExtensions.some(ext => item.endsWith(ext))
-            );
-            if (filteredArray.length > 0) {
-                let deleted = 0;
-                filteredArray.forEach(file => {
-                    const filePath = path.join(__dirname, file);
-                    try {
-                        if (fs.existsSync(filePath)) {
-                            fs.unlinkSync(filePath);
-                            deleted++;
-                        }
-                    } catch (e) {}
-                });
-                if (deleted > 0) {
-                    log(`🗑️ Deleted ${deleted} junk files`, 'cyan');
-                }
-            }
-        });
-    } catch (error) {}
-}
-
-function cleanupTempMedia() {
-    try {
-        if (!fs.existsSync(TEMP_MEDIA_DIR)) return;
-        const files = fs.readdirSync(TEMP_MEDIA_DIR);
+        const files = fs.readdirSync(tempDir);
         const now = Date.now();
-        let deleted = 0;
-        files.forEach(file => {
-            const filePath = path.join(TEMP_MEDIA_DIR, file);
+        for (const file of files) {
+            const filePath = path.join(tempDir, file);
             try {
                 const stats = fs.statSync(filePath);
-                const fileAge = now - stats.mtimeMs;
-                if (fileAge > 60 * 60 * 1000) {
+                if (now - stats.mtimeMs > 10 * 60 * 1000) {
                     fs.unlinkSync(filePath);
-                    deleted++;
                 }
-            } catch (e) {}
-        });
-        if (deleted > 0) {
-            log(`🧹 Cleaned ${deleted} temp media files`, 'cyan');
+            } catch (err) {}
         }
-    } catch (error) {}
-}
+    } catch (err) {}
+};
 
-// ==================== SESSION AUTH ====================
-if (!fs.existsSync(CREDS_PATH)) {
-    if (config.SESSION_ID && config.SESSION_ID.trim() !== "") {
-        const sessdata = config.SESSION_ID.replace("MAFIA-MD~", '');
+setInterval(clearTempDir, 5 * 60 * 1000);
+
+// ==================== SESSION HANDLER ====================
+async function initializeSession() {
+    console.log("\n🔐 ==============================");
+    console.log("🔐 SESSION INITIALIZATION");
+    console.log("🔐 ==============================\n");
+    
+    const sessionDir = path.join(__dirname, 'sessions');
+    if (!fs.existsSync(sessionDir)) {
+        fs.mkdirSync(sessionDir, { recursive: true });
+    }
+    
+    const credsPath = path.join(sessionDir, 'creds.json');
+    
+    if (config.SESSION_ID && config.SESSION_ID.trim() !== "" && !fs.existsSync(credsPath)) {
         try {
+            console.log("📦 Loading session from SESSION_ID...");
+            
+            let sessdata = config.SESSION_ID;
+            
+            const prefixes = ['MAFIA-MD~', 'BOSS-MD~', 'EMYOU~', 'BOT~'];
+            for (const p of prefixes) {
+                if (sessdata.includes(p)) {
+                    sessdata = sessdata.split(p)[1];
+                    break;
+                }
+            }
+            
+            sessdata = sessdata.trim();
+            while (sessdata.length % 4 !== 0) {
+                sessdata += '=';
+            }
+            
             const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
-            fs.writeFileSync(CREDS_PATH, decodedData);
-            log("✅ Session loaded from SESSION_ID", 'green');
+            
+            try {
+                const jsonData = JSON.parse(decodedData);
+                fs.writeFileSync(credsPath, JSON.stringify(jsonData, null, 2));
+                console.log("✅ Session loaded successfully!");
+            } catch (jsonErr) {
+                console.log("⚠️ Not JSON, saving as raw");
+                fs.writeFileSync(credsPath, decodedData);
+            }
         } catch (err) {
-            log("❌ Error decoding session data: " + err, 'red', true);
+            console.error("❌ Session error:", err.message);
         }
     }
 }
 
-// ==================== ANTI-DELETE SYSTEM ====================
+// ==================== MESSAGE STORE FOR ANTI-DELETE ====================
 const messageStore = new Map();
 
-function loadAntiDeleteSettings() {
+async function storeMessageForAntiDelete(message) {
     try {
-        if (fs.existsSync(ANTIDELETE_SETTINGS_FILE)) {
-            const data = fs.readFileSync(ANTIDELETE_SETTINGS_FILE, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        log(`Error loading anti-delete settings: ${error.message}`, 'red', true);
-    }
-    return { enabled: true };
-}
-
-function saveAntiDeleteSettings(settings) {
-    try {
-        fs.writeFileSync(ANTIDELETE_SETTINGS_FILE, JSON.stringify(settings, null, 2));
-        return true;
-    } catch (error) {
-        log(`Error saving anti-delete settings: ${error.message}`, 'red', true);
-        return false;
-    }
-}
-
-global.antiDeleteSettings = loadAntiDeleteSettings();
-
-// ==================== AUTO STATUS SYSTEM ====================
-function loadAutoStatusSettings() {
-    try {
-        if (fs.existsSync(AUTOSTATUS_SETTINGS_FILE)) {
-            const data = fs.readFileSync(AUTOSTATUS_SETTINGS_FILE, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        log(`Error loading auto status settings: ${error.message}`, 'red', true);
-    }
-    return { 
-        viewEnabled: config.AUTO_STATUS_SEEN === "true",
-        reactEnabled: config.AUTO_STATUS_REACT === "true",
-        replyEnabled: config.AUTO_STATUS_REPLY === "true",
-        customEmojis: ['❤️', '💸', '😇', '🍂', '💥', '💯', '🔥', '💫', '💎', '💗', '🤍', '🖤', '👀', '🙌', '🙆', '🚩', '🥰', '💐', '😎', '🤎', '✅', '🫀', '🧡'],
-        lastReactionTime: {},
-        reactionInterval: 1,
-        randomChance: 100
-    };
-}
-
-function saveAutoStatusSettings(settings) {
-    try {
-        fs.writeFileSync(AUTOSTATUS_SETTINGS_FILE, JSON.stringify(settings, null, 2));
-        return true;
-    } catch (error) {
-        log(`Error saving auto status settings: ${error.message}`, 'red', true);
-        return false;
-    }
-}
-
-global.autoStatusSettings = loadAutoStatusSettings();
-
-// ==================== ERROR HANDLING ====================
-function loadErrorCount() {
-    try {
-        if (fs.existsSync(SESSION_ERROR_FILE)) {
-            const data = fs.readFileSync(SESSION_ERROR_FILE, 'utf-8');
-            return JSON.parse(data);
-        }
-    } catch (error) {
-        log(`Error loading error count: ${error.message}`, 'red', true);
-    }
-    return { count: 0, last_error_timestamp: 0 };
-}
-
-function saveErrorCount(data) {
-    try {
-        fs.writeFileSync(SESSION_ERROR_FILE, JSON.stringify(data, null, 2));
-    } catch (error) {
-        log(`Error saving error count: ${error.message}`, 'red', true);
-    }
-}
-
-function deleteErrorCountFile() {
-    try {
-        if (fs.existsSync(SESSION_ERROR_FILE)) {
-            fs.unlinkSync(SESSION_ERROR_FILE);
-        }
-    } catch (e) {}
-}
-
-async function handle408Error(statusCode) {
-    if (statusCode !== DisconnectReason.connectionTimeout) return false;
-    
-    global.errorRetryCount++;
-    let errorState = loadErrorCount();
-    const MAX_RETRIES = 5;
-    
-    errorState.count = global.errorRetryCount;
-    errorState.last_error_timestamp = Date.now();
-    saveErrorCount(errorState);
-
-    log(`Connection Timeout (408). Retry: ${global.errorRetryCount}/${MAX_RETRIES}`, 'yellow');
-    
-    if (global.errorRetryCount >= MAX_RETRIES) {
-        log('🚨 MAX TIMEOUTS REACHED - Cleaning session', 'red');
-        deleteErrorCountFile();
-        global.errorRetryCount = 0;
-        await delay(5000);
-        process.exit(1);
-    }
-    return true;
-}
-
-// ==================== OWNER NUMBERS ====================
-const prefix = config.PREFIX;
-const ownerNumber = ['923089497853', '923266105873'];
-const botInstallers = ['923089497853', '923266105873', '923321766681'];
-const botCreators = ['923089497853', '923266105873'];
-
-// ==================== STORE MESSAGE WITH MEDIA ====================
-async function storeMessageWithMedia(conn, message) {
-    try {
-        if (!global.antiDeleteSettings.enabled) return;
-        if (!message.key?.id) return;
-
+        if (!message || !message.key || !message.message) return;
+        if (message.key.fromMe) return;
+        
         const messageId = message.key.id;
-        const sender = message.key.participant || message.key.remoteJid;
-        const chatId = message.key.remoteJid;
+        const now = Date.now();
         
-        let content = '';
-        let mediaType = '';
-        let mediaPath = '';
-
-        const viewOnceContainer = message.message?.viewOnceMessageV2?.message || 
-                                 message.message?.viewOnceMessage?.message;
-        
-        const actualMessage = viewOnceContainer || message.message;
-
-        // Extract content
-        if (actualMessage?.conversation) {
-            content = actualMessage.conversation;
-        } else if (actualMessage?.extendedTextMessage?.text) {
-            content = actualMessage.extendedTextMessage.text;
-        } else if (actualMessage?.imageMessage) {
-            mediaType = 'image';
-            content = actualMessage.imageMessage.caption || '';
-        } else if (actualMessage?.videoMessage) {
-            mediaType = 'video';
-            content = actualMessage.videoMessage.caption || '';
-        } else if (actualMessage?.audioMessage) {
-            mediaType = actualMessage.audioMessage.ptt ? 'voice' : 'audio';
-        } else if (actualMessage?.stickerMessage) {
-            mediaType = 'sticker';
-        } else if (actualMessage?.documentMessage) {
-            mediaType = 'document';
-            content = actualMessage.documentMessage.caption || actualMessage.documentMessage.fileName || '';
-        }
-
-        // Store in memory
         messageStore.set(messageId, {
-            content,
-            mediaType,
-            mediaPath,
-            sender,
-            chatId,
-            isGroup: chatId.endsWith('@g.us'),
-            timestamp: new Date().toISOString(),
-            isViewOnce: !!viewOnceContainer,
-            messageData: message
+            id: messageId,
+            key: {
+                remoteJid: message.key.remoteJid,
+                fromMe: false,
+                id: message.key.id,
+                participant: message.key.participant
+            },
+            message: JSON.parse(JSON.stringify(message.message)),
+            timestamp: message.messageTimestamp || Math.floor(now / 1000),
+            receivedAt: now
         });
-
-        // Cleanup old messages
-        if (messageStore.size > 100) {
-            const firstKey = messageStore.keys().next().value;
-            messageStore.delete(firstKey);
+        
+        // Save to data store
+        await saveMessage(message).catch(() => {});
+        
+        // Keep only last 500 messages
+        if (messageStore.size > 500) {
+            const oldestKeys = [...messageStore.keys()].slice(0, 100);
+            for (const key of oldestKeys) {
+                messageStore.delete(key);
+            }
         }
+        
+        // Save media messages to file for anti-delete
+        if (message.message?.imageMessage || message.message?.videoMessage || 
+            message.message?.audioMessage || message.message?.documentMessage) {
+            const antiDeleteDir = path.join(__dirname, 'anti_delete_cache');
+            if (!fs.existsSync(antiDeleteDir)) {
+                fs.mkdirSync(antiDeleteDir, { recursive: true });
+            }
+            const filePath = path.join(antiDeleteDir, `${messageId}.json`);
+            fs.writeFileSync(filePath, JSON.stringify({
+                key: message.key,
+                message: message.message,
+                timestamp: message.messageTimestamp
+            }, null, 2));
+        }
+    } catch (err) {}
+}
 
-    } catch (error) {
-        log(`Store message error: ${error.message}`, 'red', true);
+async function loadDeletedMessage(messageId) {
+    try {
+        if (messageStore.has(messageId)) {
+            return messageStore.get(messageId);
+        }
+        
+        // Try from data store
+        const dbMsg = await loadMessage(messageId).catch(() => null);
+        if (dbMsg) return dbMsg;
+        
+        // Try from file
+        const antiDeleteDir = path.join(__dirname, 'anti_delete_cache');
+        const filePath = path.join(antiDeleteDir, `${messageId}.json`);
+        if (fs.existsSync(filePath)) {
+            return JSON.parse(fs.readFileSync(filePath));
+        }
+        
+        return null;
+    } catch (err) {
+        return null;
     }
 }
 
-// ==================== HANDLE DELETED MESSAGE ====================
-async function handleDeletedMessage(conn, update) {
+// ==================== ULTRA FAST MESSAGE HANDLER ====================
+async function handleMessageUltra(message) {
+    perfStats.msgCount++;
+    const startTime = Date.now();
+    
     try {
-        if (!global.antiDeleteSettings.enabled) return;
-
-        for (const item of update) {
-            if (item.update.message === null) {
-                const messageId = item.key.id;
-                const deletedBy = item.key.participant || item.key.remoteJid;
-                const ownerJid = conn.user.id.split(':')[0] + '@s.whatsapp.net';
-
-                // Don't notify if owner deleted
-                if (deletedBy === ownerJid || deletedBy.includes(conn.user.id.split(':')[0])) {
-                    continue;
-                }
-
-                const original = messageStore.get(messageId);
-                if (!original) {
-                    continue;
-                }
-
-                log(`🗑️ Delete detected: ${messageId}`, 'yellow');
-
-                const senderName = original.sender.split('@')[0];
-                const deletedByName = deletedBy.split('@')[0];
-                
-                let groupName = 'Private Chat';
-                if (original.isGroup) {
-                    try {
-                        const metadata = await conn.groupMetadata(original.chatId);
-                        groupName = metadata.subject || 'Unknown Group';
-                    } catch (e) {
-                        groupName = 'Unknown Group';
+        if (!message || !message.message || message.key.fromMe) return;
+        
+        const type = Object.keys(message.message)[0];
+        if (type === 'protocolMessage' || type === 'senderKeyDistributionMessage') return;
+        
+        const from = message.key.remoteJid;
+        const isGroup = from.endsWith('@g.us');
+        
+        // Ultra Fast Group Cache
+        let groupMetadata = null;
+        if (isGroup && conn) {
+            const cached = speedCache.groups.get(from);
+            if (cached && (Date.now() - cached.timestamp < 120000)) {
+                groupMetadata = cached.data;
+            } else {
+                try {
+                    groupMetadata = await conn.groupMetadata(from).catch(() => null);
+                    if (groupMetadata) {
+                        speedCache.groups.set(from, {
+                            data: groupMetadata,
+                            timestamp: Date.now()
+                        });
                     }
-                }
-
-                const date = new Date(original.timestamp);
-                const timeSent = date.toLocaleTimeString('en-US', {
-                    hour12: false,
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                const dateSent = date.toLocaleDateString('en-GB');
-
-                // Send notification
-                let text = `*🚨 𝙳𝙴𝙻𝙴𝚃𝙴𝙳 𝙼𝙴𝚂𝚂𝙰𝙶𝙴! 🚨*
-━━━━━━━━━━━━━━━━━━
-𝙲𝙷𝙰𝚃: ${groupName}
-𝚂𝙴𝙽𝚃 𝙱𝚈: @${senderName}
-𝚃𝙸𝙼𝙴: ${timeSent}
-𝙳𝙰𝚃𝙴: ${dateSent}
-𝙳𝙴𝙻𝙴𝚃𝙴𝙳 𝙱𝚈: @${deletedByName}`;
-
-                if (original.mediaType) {
-                    text += `\n𝚃𝚈𝙿𝙴: ${original.mediaType.toUpperCase()}`;
-                }
-
-                if (original.content) {
-                    text += `\n𝙼𝙴𝚂𝚂𝙰𝙶𝙴: ${original.content}`;
-                }
-
-                await conn.sendMessage(ownerJid, {
-                    text,
-                    mentions: [original.sender, deletedBy]
-                });
-
-                // Remove from store
-                messageStore.delete(messageId);
+                } catch (e) {}
             }
         }
-    } catch (error) {
-        log(`Handle delete error: ${error.message}`, 'red', true);
-    }
-}
-
-// ==================== STATUS HANDLING ====================
-async function markStatusAsSeen(conn, statusJid, statusId) {
-    try {
-        await conn.readMessages([{
-            remoteJid: 'status@broadcast',
-            id: statusId,
-            fromMe: false,
-            participant: statusJid
-        }]);
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
-
-async function reactToStatus(conn, statusJid, statusId, emoji) {
-    try {
-        await conn.sendMessage('status@broadcast', {
-            react: {
-                text: emoji,
-                key: {
-                    remoteJid: 'status@broadcast',
-                    id: statusId,
-                    participant: statusJid
-                }
-            }
-        });
-        return true;
-    } catch (error) {
-        return false;
-    }
-}
-
-function getRandomEmoji() {
-    const emojis = global.autoStatusSettings.customEmojis || ['❤️', '🔥', '⭐', '👍', '💯'];
-    return emojis[Math.floor(Math.random() * emojis.length)];
+        
+        // Update Performance Stats
+        perfStats.avgResponse = Math.round(
+            (perfStats.avgResponse * 0.8) + ((Date.now() - startTime) * 0.2)
+        );
+        
+    } catch(error) {}
 }
 
 // ==================== MAIN CONNECTION FUNCTION ====================
-async function connectToWA() {
-    if (global.isRestarting) return;
-    
-    log('[🔰] Connecting to WhatsApp...', 'cyan');
-    global.isBotConnected = false;
-    
-    const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
-    const { version } = await fetchLatestBaileysVersion();
-    
-    const conn = makeWASocket({
-        logger: P({ level: 'silent' }),
-        printQRInTerminal: false,
-        browser: Browsers.macOS("Firefox"),
-        auth: {
-            creds: state.creds,
-            keys: makeCacheableSignalKeyStore(state.keys, P({ level: 'silent' }))
-        },
-        syncFullHistory: true,
-        version,
-        getMessage: async (key) => {
-            if (global.messageCache.has(key.id)) {
-                return global.messageCache.get(key.id);
-            }
-            return proto.Message.fromObject({});
-        },
-        connectTimeoutMs: 30000,
-        keepAliveIntervalMs: 20000,
-        emitOwnEvents: false,
-        fireInitQueries: true,
-        qrTimeout: 45000,
-        shouldIgnoreJid: jid => isJidBroadcast(jid)
-    });
+let conn;
 
-    // ==================== CONNECTION UPDATE ====================
-    conn.ev.on('connection.update', async (update) => {
-        const { connection, lastDisconnect } = update;
+async function connectToWA() {
+    console.log("\n📱 ==============================");
+    console.log("📱 CONNECTING TO WHATSAPP");
+    console.log("📱 ==============================\n");
+    
+    try {
+        await initializeSession();
         
-        if (connection === 'close') {
-            global.isBotConnected = false;
+        const { state, saveCreds } = await useMultiFileAuthState(path.join(__dirname, 'sessions'));
+        const { version } = await fetchLatestBaileysVersion();
+        
+        conn = makeWASocket({
+            logger: P({ level: 'silent' }),
+            printQRInTerminal: false,
+            browser: Browsers.macOS("Firefox"),
+            syncFullHistory: false,
+            auth: state,
+            version,
+            markOnlineOnConnect: config.ALWAYS_ONLINE === 'true',
+            emitOwnEvents: false,
+            fireInitQueries: false,
+            retryRequestDelayMs: 100,
+            generateHighQualityLinkPreview: true,
+            defaultQueryTimeoutMs: 60000,
+            connectTimeoutMs: 60000,
+            keepAliveIntervalMs: 10000,
+        });
+        
+        conn.ev.on('connection.update', async (update) => {
+            const { connection, lastDisconnect, qr } = update;
             
-            const statusCode = lastDisconnect?.error?.output?.statusCode;
-            
-            log(`Connection closed: ${statusCode}`, 'yellow');
-            
-            if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
-                log('🚨 LOGGED OUT! Cleaning session...', 'red');
-                try {
-                    rmSync(SESSION_DIR, { recursive: true, force: true });
-                } catch (e) {}
-                await delay(5000);
-                connectToWA();
-            } else if (statusCode === DisconnectReason.timedOut) {
-                const is408Handled = await handle408Error(statusCode);
-                if (!is408Handled) {
-                    setTimeout(connectToWA, 2000);
-                }
-            } else {
-                setTimeout(connectToWA, 3000);
+            if (qr) {
+                console.log("📱 QR Code received - Scan with WhatsApp");
+                qrcode.generate(qr, { small: true });
             }
-        } else if (connection === 'open') {
-            global.isBotConnected = true;
-            global.errorRetryCount = 0;
-            deleteErrorCountFile();
             
-            log('🧬 Installing Plugins', 'cyan');
-            const pluginPath = path.join(__dirname, 'plugins');
-            if (fs.existsSync(pluginPath)) {
-                fs.readdirSync(pluginPath).forEach((plugin) => {
-                    if (path.extname(plugin).toLowerCase() === ".js") {
+            if (connection === 'connecting') {
+                console.log('Connecting to WhatsApp...');
+            }
+            
+            if (connection === 'close') {
+                const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
+                const statusCode = lastDisconnect?.error?.output?.statusCode;
+                
+                console.log(`❌ Connection closed - Status: ${statusCode}`);
+                
+                if (statusCode === DisconnectReason.loggedOut || statusCode === 401) {
+                    try {
+                        fs.rmSync('./sessions', { recursive: true, force: true });
+                        console.log('⚠️ Session logged out. Please re-authenticate');
+                    } catch (error) {
+                        console.log(`❌ Error deleting session: ${error.message}`);
+                    }
+                }
+                
+                if (shouldReconnect) {
+                    console.log('Reconnecting in 5 seconds...');
+                    setTimeout(connectToWA, 5000);
+                }
+            }
+            
+            if (connection === 'open') {
+                console.log('\n🧬 Installing Plugins');
+                
+                // Load plugins count
+                let pluginCount = 0;
+                try {
+                    const pluginsDir = path.join(__dirname, 'plugins');
+                    if (fs.existsSync(pluginsDir)) {
+                        const pluginFiles = fs.readdirSync(pluginsDir).filter(file => file.endsWith('.js'));
+                        pluginCount = pluginFiles.length;
+                        console.log(`✅ Found ${pluginCount} plugin files`);
+                    }
+                } catch (err) {
+                    console.error("❌ Plugin loading error:", err.message);
+                }
+                
+                console.log('✅ Bot connected to whatsapp ✅');
+                console.log(`👤 Bot Number: ${conn.user.id.split(':')[0]}`);
+                console.log(`📝 Total Commands: ${commands.length}`);
+                console.log(`📦 Plugins: ${pluginCount}`);
+                
+                // Welcome message
+                setTimeout(() => {
+                    let up = `*Hello there ADEEL-MD³⁰³ User! 👋🏻*\n\n` +
+                            `> Simple , Straight Forward But Loaded With Features 🎊\n\n` +
+                            `- *YOUR PREFIX:* = ${prefix}\n` +
+                            `- *Commands:* ${commands.length}\n` +
+                            `- *Anti-Delete:* ${config.ANTI_DELETE === 'true' ? '✅' : '❌'}\n\n` +
+                            `> 📌 ᴘᴏᴡᴇʀ ʙʏ ᴍᴀғɪᴀ ᴀᴅᴇᴇʟ`;
+                    
+                    conn.sendMessage(conn.user.id, { 
+                        image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/qj4dc0.jpg' }, 
+                        caption: up 
+                    }).catch(err => console.error("Welcome message error:", err.message));
+                    
+                    // Send to owner as well
+                    conn.sendMessage(ownerNumber[0] + '@s.whatsapp.net', {
+                        text: `✅ *ADEEL-MD ACTIVATED*\n\nBot is now online!\nCommands: ${commands.length}\nPrefix: ${prefix}`
+                    }).catch(() => {});
+                }, 5000);
+            }
+        });
+        
+        conn.ev.on('creds.update', saveCreds);
+
+        // ANTI-DELETE
+        if (config.ANTI_DELETE === 'true') {
+            console.log("🛡️ Anti-Delete: ACTIVE");
+            
+            conn.ev.on('messages.update', async updates => {
+                for (const update of updates) {
+                    if (update.update && update.update.message === null) {
                         try {
-                            require(path.join(pluginPath, plugin));
-                        } catch (e) {
-                            log(`Error loading plugin ${plugin}: ${e}`, 'red', true);
+                            await AntiDelete(conn, [update]);
+                        } catch (err) {
+                            console.error("Anti-delete error:", err.message);
                         }
                     }
-                });
-            }
-            log('✅ Plugins installed successfully', 'green');
-            log('✅ Bot connected to WhatsApp', 'green');
-            
-            // Send welcome message
-            let up = `*Hello there FAIZAN-MD⁸⁷³ User! 👋🏻* \n\n> Simple , Straight Forward But Loaded With Features 🎊, Meet FAIZAN-MD⁸⁷³ WhatsApp Bot.\n\n *Thanks for using FAIZAN-MD⁸⁷³ 🚩* \n\n> Join WhatsApp Channel :- ⤵️\n \nhttps://whatsapp.com/channel/0029VbBmz4V5vKAIaWfYPT0C \n\n- *YOUR PREFIX:* = ${prefix}\n\nDont forget to give star to repo ⬇️\n\nhttps://github.com/Faizan-MD-BOTZ/Faizan-Ai\n\n> © ᴘᴏᴡᴇʀᴇᴅ ʙʏ FAIZAN-MD⁸⁷³ ❣️ 🖤`;
-            conn.sendMessage(conn.user.id, { image: { url: `https://files.catbox.moe/ejufwa.jpg` }, caption: up });
-        }
-    });
-
-    conn.ev.on('creds.update', saveCreds);
-
-    // ==================== MESSAGE STORING ====================
-    conn.ev.on('messages.upsert', async chatUpdate => {
-        try {
-            for (const msg of chatUpdate.messages) {
-                if (!msg.message) continue;
-                await storeMessageWithMedia(conn, msg);
-                let messageId = msg.key.id;
-                global.messageCache.set(messageId, msg.message);
-                
-                if (global.messageCache.size > 500) {
-                    const firstKey = global.messageCache.keys().next().value;
-                    global.messageCache.delete(firstKey);
                 }
-            }
-        } catch (error) {}
-    });
-
-    // ==================== ANTI-DELETE HANDLER ====================
-    conn.ev.on('messages.update', async updates => {
-        for (const update of updates) {
-            if (update.update.message === null) {
-                await handleDeletedMessage(conn, updates);
-            }
+            });
         }
-    });
 
-    // ==================== ANTI-CALL ====================
-    conn.ev.on("call", async (json) => {
-        try {
-            if (config.ANTI_CALL !== 'true') return;
-            for (const call of json) {
-                if (call.status !== 'offer') continue;
-                const id = call.id;
-                const from = call.from;
-                await conn.rejectCall(id, from);
-                await conn.sendMessage(from, {
-                    text: config.REJECT_MSG || '*📞 ᴄαℓℓ ɴσт αℓℓσωє∂ ιɴ тнιѕ ɴᴜмвєʀ уσυ ∂σɴт нανє ᴘєʀмιѕѕισɴ 📵*'
-                });
-            }
-        } catch (err) {}
-    });
-
-    // ==================== GROUP EVENTS ====================
-    conn.ev.on("group-participants.update", (update) => GroupEvents(conn, update));
-
-    // ==================== MESSAGE HANDLER ====================
-    conn.ev.on('messages.upsert', async (mek) => {
-        try {
-            if (!mek.messages || !mek.messages[0]) return;
-            mek = mek.messages[0];
-            if (!mek.message) return;
-            
-            mek.message = (getContentType(mek.message) === 'ephemeralMessage') 
-                ? mek.message.ephemeralMessage.message 
-                : mek.message;
-
-            // ==================== STATUS HANDLING ====================
-            if (mek.key && mek.key.remoteJid === 'status@broadcast') {
+        // ANTI CALL
+        if (config.ANTI_CALL === 'true') {
+            conn.ev.on("call", async (json) => {
                 try {
-                    const statusId = mek.key.id;
-                    const statusJid = mek.key.participant || mek.participant;
-                    
-                    if (!statusJid || statusJid === 'status@broadcast') return;
-                    
-                    // AUTO STATUS VIEW
-                    if (global.autoStatusSettings.viewEnabled) {
-                        setTimeout(async () => {
-                            await markStatusAsSeen(conn, statusJid, statusId);
-                        }, 1000);
+                    const call = json.find(c => c.status === 'offer');
+                    if (call) {
+                        await conn.rejectCall(call.id, call.from);
+                        console.log(`📵 Call rejected from ${call.from}`);
+                    }
+                } catch (err) {
+                    console.error("Anti-call error:", err.message);
+                }
+            });
+        }
+
+        // GROUP EVENTS
+        conn.ev.on("group-participants.update", async (update) => {
+            try {
+                await GroupEvents(conn, update);
+            } catch (err) {
+                console.error("Group event error:", err.message);
+            }
+        });
+
+        // MESSAGE HANDLER
+        conn.ev.on('messages.upsert', async (mekData) => {
+            // Queue for ultra processing
+            const message = mekData.messages[0];
+            if (message) {
+                msgQueue.push(message);
+                if (msgQueue.length === 1) processQueue();
+            }
+            
+            try {
+                const message = mekData.messages[0];
+                if (!message || !message.message) return;
+                
+                message.message = (getContentType(message.message) === 'ephemeralMessage') 
+                    ? message.message.ephemeralMessage.message 
+                    : message.message;
+                
+                // Auto read
+                if (config.READ_MESSAGE === 'true') {
+                    await conn.readMessages([message.key]).catch(() => {});
+                }
+                
+                // Handle view once
+                if (message.message.viewOnceMessageV2) {
+                    message.message = message.message.viewOnceMessageV2.message;
+                }
+                
+                // Store for anti-delete
+                if (config.ANTI_DELETE === 'true') {
+                    await storeMessageForAntiDelete(message);
+                }
+                
+                // Auto typing/recording
+                const from = message.key.remoteJid;
+                if (config.AUTO_TYPING === 'true') {
+                    await conn.sendPresenceUpdate('composing', from).catch(() => {});
+                }
+                if (config.AUTO_RECORDING === 'true') {
+                    await conn.sendPresenceUpdate('recording', from).catch(() => {});
+                }
+                
+                // Handle status
+                if (message.key && message.key.remoteJid === 'status@broadcast') {
+                    if (config.AUTO_STATUS_SEEN === "true") {
+                        await conn.readMessages([message.key]).catch(() => {});
                     }
                     
-                    // AUTO STATUS REACT
-                    if (global.autoStatusSettings.reactEnabled) {
-                        setTimeout(async () => {
-                            const randomChance = global.autoStatusSettings.randomChance || 100;
-                            const shouldReact = Math.random() * 100 <= randomChance;
-                            
-                            if (shouldReact) {
-                                const emoji = getRandomEmoji();
-                                await delay(2000);
-                                await reactToStatus(conn, statusJid, statusId, emoji);
+                    if (config.AUTO_STATUS_REACT === "true") {
+                        const emojis = ['❤️', '🔥', '👍', '😊', '🎉', '💯'];
+                        const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                        await conn.sendMessage(message.key.remoteJid, {
+                            react: { text: randomEmoji, key: message.key }
+                        }).catch(() => {});
+                    }
+                    
+                    if (config.AUTO_STATUS_REPLY === "true" && config.AUTO_STATUS_MSG) {
+                        const user = message.key.participant;
+                        await conn.sendMessage(user, { 
+                            text: config.AUTO_STATUS_MSG
+                        }, { quoted: message }).catch(() => {});
+                    }
+                    return;
+                }
+                
+                // Serialize message
+                const m = sms(conn, message);
+                
+                // Check if user is banned
+                const sender = m.sender || message.key.participant || message.key.remoteJid;
+                if (banList.includes(sender)) return;
+                
+                // Check if user is sudo/owner
+                const senderNumber = sender.split('@')[0];
+                const isOwner = ownerNumber.includes(senderNumber);
+                const isSudo = sudoList.includes(sender);
+                const isCreator = isOwner || isSudo;
+                
+                // Auto reply
+                if (config.AUTO_REPLY === 'true' && m.text) {
+                    const lowerText = m.text.toLowerCase();
+                    for (const [key, value] of Object.entries(autoReply)) {
+                        if (lowerText.includes(key.toLowerCase())) {
+                            await conn.sendMessage(from, { text: value }, { quoted: message }).catch(() => {});
+                            break;
+                        }
+                    }
+                }
+                
+                // Auto sticker
+                if (config.AUTO_STICKER === 'true' && m.text) {
+                    const lowerText = m.text.toLowerCase();
+                    for (const [key, value] of Object.entries(autoSticker)) {
+                        if (lowerText.includes(key.toLowerCase())) {
+                            const stickerPath = path.join(__dirname, 'assets', 'autosticker', value);
+                            if (fs.existsSync(stickerPath)) {
+                                await conn.sendMessage(from, {
+                                    sticker: fs.readFileSync(stickerPath)
+                                }, { quoted: message }).catch(() => {});
                             }
-                        }, 1500);
+                            break;
+                        }
                     }
-                    
-                    // AUTO STATUS REPLY
-                    if (global.autoStatusSettings.replyEnabled) {
-                        setTimeout(async () => {
-                            const replyText = config.AUTO_STATUS_MSG || 'Nice status! 💜';
-                            await conn.sendMessage(statusJid, { text: replyText });
-                        }, 3000);
-                    }
-                    
-                } catch (error) {}
-                return;
-            }
-
-            // READ MESSAGE
-            if (config.READ_MESSAGE === 'true') {
-                await conn.readMessages([mek.key]);
-            }
-
-            // VIEW ONCE
-            if (mek.message.viewOnceMessageV2) {
-                mek.message = (getContentType(mek.message) === 'ephemeralMessage') ? mek.message.ephemeralMessage.message : mek.message;
-            }
-
-            await Promise.all([saveMessage(mek)]);
-
-            const m = sms(conn, mek);
-            const type = getContentType(mek.message);
-            const from = mek.key.remoteJid;
-            const quoted = type == 'extendedTextMessage' && mek.message.extendedTextMessage.contextInfo != null ? mek.message.extendedTextMessage.contextInfo.quotedMessage || [] : [];
-            const body = (type === 'conversation') ? mek.message.conversation : 
-                        (type === 'extendedTextMessage') ? mek.message.extendedTextMessage.text : 
-                        (type == 'imageMessage') && mek.message.imageMessage.caption ? mek.message.imageMessage.caption : 
-                        (type == 'videoMessage') && mek.message.videoMessage.caption ? mek.message.videoMessage.caption : '';
-            const isCmd = body.startsWith(prefix);
-            const budy = typeof mek.text == 'string' ? mek.text : false;
-            const command = isCmd ? body.slice(prefix.length).trim().split(' ').shift().toLowerCase() : '';
-            const args = body.trim().split(/ +/).slice(1);
-            const q = args.join(' ');
-            const text = args.join(' ');
-            const isGroup = from.endsWith('@g.us');
-            const sender = mek.key.fromMe ? conn.user.id : (mek.key.participant || mek.key.remoteJid);
-            const senderNumber = sender.split('@')[0];
-            const botNumber = conn.user.id.split(':')[0];
-            const pushname = mek.pushName || 'Sin Nombre';
-            const isMe = botNumber.includes(senderNumber);
-            const isOwner = ownerNumber.includes(senderNumber) || isMe;
-            const isBotInstaller = botInstallers.includes(senderNumber);
-            const isBotCreator = botCreators.includes(senderNumber);
-            const isSpecialUser = isOwner || isBotInstaller || isBotCreator;
-            
-            const botNumber2 = await jidNormalizedUser(conn.user.id);
-            const groupMetadata = isGroup ? await conn.groupMetadata(from).catch(() => null) : null;
-            const groupName = isGroup ? groupMetadata?.subject : '';
-            const participants = isGroup && groupMetadata?.participants ? groupMetadata.participants : [];
-            const groupAdmins = isGroup ? await getGroupAdmins(participants) : [];
-            const isBotAdmins = isGroup ? groupAdmins.includes(botNumber2) : false;
-            const isAdmins = isGroup ? groupAdmins.includes(sender) : false;
-            const isReact = m.message.reactionMessage ? true : false;
-
-            const reply = (teks) => {
-                conn.sendMessage(from, { text: teks }, { quoted: mek });
-            };
-
-            // ==================== ANTI-DELETE COMMAND ====================
-            if (isSpecialUser && command === 'antidelete') {
-                const arg = args[0]?.toLowerCase();
-                if (arg === 'on') {
-                    global.antiDeleteSettings.enabled = true;
-                    saveAntiDeleteSettings(global.antiDeleteSettings);
-                    reply('✅ *Anti-Delete ENABLED*');
-                } else if (arg === 'off') {
-                    global.antiDeleteSettings.enabled = false;
-                    saveAntiDeleteSettings(global.antiDeleteSettings);
-                    reply('❌ *Anti-Delete DISABLED*');
-                } else {
-                    reply(`*🗑️ ANTI-DELETE STATUS*\n\nCurrent: ${global.antiDeleteSettings.enabled ? '✅ ENABLED' : '❌ DISABLED'}\n\nUsage: ${prefix}antidelete on/off`);
-                }
-                return;
-            }
-
-            // ==================== AUTO STATUS COMMAND ====================
-            if (isSpecialUser && command === 'autostatus') {
-                const subCmd = args[0]?.toLowerCase();
-                if (!subCmd) {
-                    const viewStatus = global.autoStatusSettings.viewEnabled ? '✅ ON' : '❌ OFF';
-                    const reactStatus = global.autoStatusSettings.reactEnabled ? '✅ ON' : '❌ OFF';
-                    const replyStatus = global.autoStatusSettings.replyEnabled ? '✅ ON' : '❌ OFF';
-                    reply(`*⚙️ AUTO STATUS SETTINGS*\n\n📱 View: ${viewStatus}\n💫 React: ${reactStatus}\n📩 Reply: ${replyStatus}\n\nCommands:\n${prefix}autostatus view on/off\n${prefix}autostatus react on/off\n${prefix}autostatus reply on/off`);
-                    return;
                 }
                 
-                if (subCmd === 'view') {
-                    const action = args[1]?.toLowerCase();
-                    if (action === 'on') {
-                        global.autoStatusSettings.viewEnabled = true;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('✅ *Auto Status View ENABLED*');
-                    } else if (action === 'off') {
-                        global.autoStatusSettings.viewEnabled = false;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('❌ *Auto Status View DISABLED*');
+                // Auto react
+                if (config.AUTO_REACT === 'true' && !message.message.reactionMessage) {
+                    let reactions = ['❤️', '🔥', '👍', '😊', '🎉', '💯'];
+                    if (config.CUSTOM_REACT === 'true' && config.CUSTOM_REACT_EMOJIS) {
+                        reactions = config.CUSTOM_REACT_EMOJIS.split(',');
                     }
-                } else if (subCmd === 'react') {
-                    const action = args[1]?.toLowerCase();
-                    if (action === 'on') {
-                        global.autoStatusSettings.reactEnabled = true;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('✅ *Auto Status React ENABLED*');
-                    } else if (action === 'off') {
-                        global.autoStatusSettings.reactEnabled = false;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('❌ *Auto Status React DISABLED*');
-                    }
-                } else if (subCmd === 'reply') {
-                    const action = args[1]?.toLowerCase();
-                    if (action === 'on') {
-                        global.autoStatusSettings.replyEnabled = true;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('✅ *Auto Status Reply ENABLED*');
-                    } else if (action === 'off') {
-                        global.autoStatusSettings.replyEnabled = false;
-                        saveAutoStatusSettings(global.autoStatusSettings);
-                        reply('❌ *Auto Status Reply DISABLED*');
-                    }
+                    const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
+                    await conn.sendMessage(from, { 
+                        react: { text: randomReaction, key: message.key } 
+                    }).catch(() => {});
                 }
-                return;
-            }
-
-            // ==================== EVAL COMMANDS ====================
-            if (isSpecialUser && mek.text.startsWith('%')) {
-                let code = budy.slice(2);
-                if (!code) {
-                    reply(`Provide me with a query to run Master!`);
-                    return;
-                }
-                try {
-                    let resultTest = eval(code);
-                    if (typeof resultTest === 'object')
-                        reply(util.format(resultTest));
-                    else reply(util.format(resultTest));
-                } catch (err) {
-                    reply(util.format(err));
-                }
-                return;
-            }
-
-            if (isSpecialUser && mek.text.startsWith('$')) {
-                let code = budy.slice(2);
-                if (!code) {
-                    reply(`Provide me with a query to run Master!`);
-                    return;
-                }
-                try {
-                    let resultTest = await eval('const a = async()=>{\n' + code + '\n}\na()');
-                    let h = util.format(resultTest);
-                    if (h === undefined) return;
-                    else reply(h);
-                } catch (err) {
-                    reply(util.format(err));
-                }
-                return;
-            }
-
-            // ==================== REACTIONS ====================
-            if (isSpecialUser && !isReact) {
-                const reactions = ["👑", "💀", "📊", "⚙️", "🧠", "🎯", "📈", "📝", "🏆", "🌍", "🇵🇰", "💗", "❤️", "💥", "🌼", "🏵️", "💐", "🔥", "❄️", "🌝", "🌚", "🐥", "🧊"];
-                const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-                m.react(randomReaction);
-            }
-
-            if (!isReact && config.AUTO_REACT === 'true') {
-                const reactions = ['❤️', '🔥', '⭐', '👍', '💯', '😂', '😍', '😮', '😢', '👏'];
-                const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-                m.react(randomReaction);
-            }
-
-            if (!isReact && config.CUSTOM_REACT === 'true') {
-                const reactions = (config.CUSTOM_REACT_EMOJIS || '🥲,😂,👍🏻,🙂,😔').split(',');
-                const randomReaction = reactions[Math.floor(Math.random() * reactions.length)];
-                m.react(randomReaction);
-            }
-
-            // ==================== MODE CHECK ====================
-            if(!isSpecialUser && config.MODE === "private") return;
-            if(!isSpecialUser && isGroup && config.MODE === "inbox") return;
-            if(!isSpecialUser && !isGroup && config.MODE === "groups") return;
-
-            // ==================== COMMAND HANDLER ====================
-            const events = require('./command');
-            const cmdName = isCmd ? body.slice(1).trim().split(" ")[0].toLowerCase() : false;
-            
-            if (isCmd) {
-                const cmd = events.commands.find((cmd) => cmd.pattern === (cmdName)) || events.commands.find((cmd) => cmd.alias && cmd.alias.includes(cmdName));
-                if (cmd) {
-                    if (cmd.react) conn.sendMessage(from, { react: { text: cmd.react, key: mek.key }});
+                
+                // Check command
+                let body = m.text || '';
+                const isCmd = body.startsWith(prefix);
+                
+                if (isCmd && commands.length > 0) {
+                    const cmdName = body.slice(prefix.length).trim().split(' ')[0].toLowerCase();
+                    console.log(`🔍 Looking for command: ${cmdName}`);
                     
-                    try {
-                        cmd.function(conn, mek, m,{
-                            from, quoted, body, isCmd, command, args, q, text, isGroup, 
-                            sender, senderNumber, botNumber2, botNumber, pushname, 
-                            isMe, isOwner: isSpecialUser,
-                            isCreator: isSpecialUser,
-                            isBotInstaller,
-                            isBotCreator,
-                            isSpecialUser,
-                            groupMetadata, groupName, participants, groupAdmins, 
-                            isBotAdmins, isAdmins, reply
-                        });
-                    } catch (e) {
-                        log("[PLUGIN ERROR] " + e, 'red', true);
+                    let cmd = commands.find(c => c.pattern === cmdName);
+                    
+                    if (!cmd) {
+                        const aliasCmd = aliases.get(cmdName);
+                        if (aliasCmd) {
+                            console.log(`📌 Found alias: ${cmdName} → ${aliasCmd}`);
+                            cmd = commands.find(c => c.pattern === aliasCmd);
+                        }
+                    }
+                    
+                    if (cmd) {
+                        console.log(`🎯 Executing command: ${cmdName}`);
+                        
+                        // Command react
+                        if (cmd.react) {
+                            conn.sendMessage(from, { 
+                                react: { text: cmd.react, key: message.key } 
+                            }).catch(() => {});
+                        }
+                        
+                        // Check if command requires owner
+                        if (cmd.category === 'owner' && !isCreator) {
+                            return conn.sendMessage(from, { 
+                                text: '❌ This command is only for the bot owner!' 
+                            }, { quoted: message });
+                        }
+                        
+                        // Execute command
+                        try {
+                            const args = body.slice(prefix.length + cmdName.length).trim().split(' ');
+                            const q = args.join(' ');
+                            
+                            await cmd.function(conn, message, m, {
+                                from,
+                                quoted: message,
+                                body,
+                                isCmd,
+                                command: cmdName,
+                                args,
+                                q,
+                                text: q,
+                                isGroup: from.endsWith('@g.us'),
+                                sender,
+                                senderNumber,
+                                botNumber2: conn.user.id,
+                                botNumber: conn.user.id.split(':')[0],
+                                pushname: m.pushName || 'User',
+                                isMe: sender === conn.user.id,
+                                isOwner,
+                                isCreator,
+                                groupMetadata: from.endsWith('@g.us') ? await conn.groupMetadata(from).catch(() => null) : null,
+                                groupName: from.endsWith('@g.us') ? (await conn.groupMetadata(from).catch(() => null))?.subject : null,
+                                participants: from.endsWith('@g.us') ? (await conn.groupMetadata(from).catch(() => null))?.participants : null,
+                                groupAdmins: from.endsWith('@g.us') ? getGroupAdmins((await conn.groupMetadata(from).catch(() => null))?.participants || []) : [],
+                                isBotAdmins: from.endsWith('@g.us') ? getGroupAdmins((await conn.groupMetadata(from).catch(() => null))?.participants || []).includes(conn.user.id) : false,
+                                isAdmins: from.endsWith('@g.us') ? getGroupAdmins((await conn.groupMetadata(from).catch(() => null))?.participants || []).includes(sender) : false,
+                                reply: (text) => {
+                                    conn.sendMessage(from, { text }, { quoted: message });
+                                }
+                            });
+                        } catch (e) {
+                            console.error(`❌ Command error (${cmdName}):`, e.message);
+                            conn.sendMessage(from, { 
+                                text: `❌ Error: ${e.message}` 
+                            }, { quoted: message });
+                        }
+                    } else {
+                        console.log(`❌ Command not found: ${cmdName}`);
                     }
                 }
+                
+            } catch (err) {
+                console.error("Message processing error:", err.message);
             }
+        });
 
-            events.commands.map(async(command) => {
-                if (body && command.on === "body") {
-                    command.function(conn, mek, m,{
-                        from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
-                        sender, senderNumber, botNumber2, botNumber, pushname, 
-                        isMe, isOwner: isSpecialUser,
-                        isCreator: isSpecialUser,
-                        isBotInstaller,
-                        isBotCreator,
-                        isSpecialUser,
-                        groupMetadata, groupName, participants, groupAdmins, 
-                        isBotAdmins, isAdmins, reply
-                    });
-                } else if (mek.q && command.on === "text") {
-                    command.function(conn, mek, m,{
-                        from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
-                        sender, senderNumber, botNumber2, botNumber, pushname, 
-                        isMe, isOwner: isSpecialUser,
-                        isCreator: isSpecialUser,
-                        isBotInstaller,
-                        isBotCreator,
-                        isSpecialUser,
-                        groupMetadata, groupName, participants, groupAdmins, 
-                        isBotAdmins, isAdmins, reply
-                    });
-                } else if ((command.on === "image" || command.on === "photo") && mek.type === "imageMessage") {
-                    command.function(conn, mek, m,{
-                        from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
-                        sender, senderNumber, botNumber2, botNumber, pushname, 
-                        isMe, isOwner: isSpecialUser,
-                        isCreator: isSpecialUser,
-                        isBotInstaller,
-                        isBotCreator,
-                        isSpecialUser,
-                        groupMetadata, groupName, participants, groupAdmins, 
-                        isBotAdmins, isAdmins, reply
-                    });
-                } else if (command.on === "sticker" && mek.type === "stickerMessage") {
-                    command.function(conn, mek, m,{
-                        from, l, quoted, body, isCmd, command, args, q, text, isGroup, 
-                        sender, senderNumber, botNumber2, botNumber, pushname, 
-                        isMe, isOwner: isSpecialUser,
-                        isCreator: isSpecialUser,
-                        isBotInstaller,
-                        isBotCreator,
-                        isSpecialUser,
-                        groupMetadata, groupName, participants, groupAdmins, 
-                        isBotAdmins, isAdmins, reply
-                    });
-                }
-            });
+        // Helper functions
+        conn.decodeJid = jid => {
+            if (!jid) return jid;
+            if (/:\d+@/gi.test(jid)) {
+                let decode = jidDecode(jid) || {};
+                return (decode.user && decode.server && decode.user + '@' + decode.server) || jid;
+            } else return jid;
+        };
 
-        } catch (e) {
-            log('Message handler error: ' + e, 'red', true);
-        }
-    });
-
-    // ==================== HELPER FUNCTIONS ====================
-    conn.decodeJid = jid => {
-        if (!jid) return jid;
-        if (/:\d+@/gi.test(jid)) {
-            let decode = jidDecode(jid) || {};
-            return (
-                (decode.user &&
-                decode.server &&
-                decode.user + '@' + decode.server) ||
-                jid
-            );
-        } else return jid;
-    };
-
-    conn.copyNForward = async(jid, message, forceForward = false, options = {}) => {
-        let vtype;
-        if (options.readViewOnce) {
-            message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message ? message.message.ephemeralMessage.message : (message.message || undefined);
-            vtype = Object.keys(message.message.viewOnceMessage.message)[0];
-            delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
-            delete message.message.viewOnceMessage.message[vtype].viewOnce;
-            message.message = {
-                ...message.message.viewOnceMessage.message
+        conn.copyNForward = async(jid, message, forceForward = false, options = {}) => {
+            let vtype;
+            if (options.readViewOnce) {
+                message.message = message.message && message.message.ephemeralMessage && message.message.ephemeralMessage.message ? message.message.ephemeralMessage.message : (message.message || undefined);
+                vtype = Object.keys(message.message.viewOnceMessage.message)[0];
+                delete(message.message && message.message.ignore ? message.message.ignore : (message.message || undefined));
+                delete message.message.viewOnceMessage.message[vtype].viewOnce;
+                message.message = {
+                    ...message.message.viewOnceMessage.message
+                };
+            }
+            
+            let mtype = Object.keys(message.message)[0];
+            let content = await generateForwardMessageContent(message, forceForward);
+            let ctype = Object.keys(content)[0];
+            let context = {};
+            if (mtype != "conversation") context = message.message[mtype].contextInfo;
+            content[ctype].contextInfo = {
+                ...context,
+                ...content[ctype].contextInfo
             };
-        }
-    
-        let mtype = Object.keys(message.message)[0];
-        let content = await generateForwardMessageContent(message, forceForward);
-        let ctype = Object.keys(content)[0];
-        let context = {};
-        if (mtype != "conversation") context = message.message[mtype].contextInfo;
-        content[ctype].contextInfo = {
-            ...context,
-            ...content[ctype].contextInfo
+            const waMessage = await generateWAMessageFromContent(jid, content, options ? {
+                ...content[ctype],
+                ...options,
+                ...(options.contextInfo ? {
+                    contextInfo: {
+                        ...content[ctype].contextInfo,
+                        ...options.contextInfo
+                    }
+                } : {})
+            } : {});
+            await conn.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
+            return waMessage;
         };
-        const waMessage = await generateWAMessageFromContent(jid, content, options ? {
-            ...content[ctype],
-            ...options,
-            ...(options.contextInfo ? {
-                contextInfo: {
-                    ...content[ctype].contextInfo,
-                    ...options.contextInfo
-                }
-            } : {})
-        } : {});
-        await conn.relayMessage(jid, waMessage.message, { messageId: waMessage.key.id });
-        return waMessage;
-    };
 
-    conn.downloadAndSaveMediaMessage = async(message, filename, attachExtension = true) => {
-        let quoted = message.msg ? message.msg : message;
-        let mime = (message.msg || message).mimetype || '';
-        let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0];
-        const stream = await downloadContentFromMessage(quoted, messageType);
-        let buffer = Buffer.from([]);
-        for await (const chunk of stream) {
-            buffer = Buffer.concat([buffer, chunk]);
-        }
-        let type = await FileType.fromBuffer(buffer);
-        trueFileName = attachExtension ? (filename + '.' + type.ext) : filename;
-        await fs.writeFileSync(trueFileName, buffer);
-        return trueFileName;
-    };
-
-    conn.downloadMediaMessage = async(message) => {
-        let mime = (message.msg || message).mimetype || '';
-        let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0];
-        const stream = await downloadContentFromMessage(message, messageType);
-        let buffer = Buffer.from([]);
-        for await (const chunk of stream) {
-            buffer = Buffer.concat([buffer, chunk]);
-        }
-        return buffer;
-    };
-
-    conn.sendFileUrl = async (jid, url, caption, quoted, options = {}) => {
-        let mime = '';
-        let res = await axios.head(url);
-        mime = res.headers['content-type'];
-        if (mime.split("/")[1] === "gif") {
-            return conn.sendMessage(jid, { video: await getBuffer(url), caption: caption, gifPlayback: true, ...options }, { quoted: quoted, ...options });
-        }
-        let type = mime.split("/")[0] + "Message";
-        if (mime === "application/pdf") {
-            return conn.sendMessage(jid, { document: await getBuffer(url), mimetype: 'application/pdf', caption: caption, ...options }, { quoted: quoted, ...options });
-        }
-        if (mime.split("/")[0] === "image") {
-            return conn.sendMessage(jid, { image: await getBuffer(url), caption: caption, ...options }, { quoted: quoted, ...options });
-        }
-        if (mime.split("/")[0] === "video") {
-            return conn.sendMessage(jid, { video: await getBuffer(url), caption: caption, mimetype: 'video/mp4', ...options }, { quoted: quoted, ...options });
-        }
-        if (mime.split("/")[0] === "audio") {
-            return conn.sendMessage(jid, { audio: await getBuffer(url), caption: caption, mimetype: 'audio/mpeg', ...options }, { quoted: quoted, ...options });
-        }
-    };
-
-    conn.cMod = (jid, copy, text = '', sender = conn.user.id, options = {}) => {
-        let mtype = Object.keys(copy.message)[0];
-        let isEphemeral = mtype === 'ephemeralMessage';
-        if (isEphemeral) {
-            mtype = Object.keys(copy.message.ephemeralMessage.message)[0];
-        }
-        let msg = isEphemeral ? copy.message.ephemeralMessage.message : copy.message;
-        let content = msg[mtype];
-        if (typeof content === 'string') msg[mtype] = text || content;
-        else if (content.caption) content.caption = text || content.caption;
-        else if (content.text) content.text = text || content.text;
-        if (typeof content !== 'string') msg[mtype] = {
-            ...content,
-            ...options
-        };
-        if (copy.key.participant) sender = copy.key.participant = sender || copy.key.participant;
-        else if (copy.key.participant) sender = copy.key.participant = sender || copy.key.participant;
-        if (copy.key.remoteJid.includes('@s.whatsapp.net')) sender = sender || copy.key.remoteJid;
-        else if (copy.key.remoteJid.includes('@broadcast')) sender = sender || copy.key.remoteJid;
-        copy.key.remoteJid = jid;
-        copy.key.fromMe = sender === conn.user.id;
-    
-        return proto.WebMessageInfo.fromObject(copy);
-    };
-
-    conn.getFile = async(PATH, save) => {
-        let res;
-        let data = Buffer.isBuffer(PATH) ? PATH : /^data:.*?\/.*?;base64,/i.test(PATH) ? Buffer.from(PATH.split `,` [1], 'base64') : /^https?:\/\//.test(PATH) ? await (res = await getBuffer(PATH)) : fs.existsSync(PATH) ? (filename = PATH, fs.readFileSync(PATH)) : typeof PATH === 'string' ? PATH : Buffer.alloc(0);
-        let type = await FileType.fromBuffer(data) || {
-            mime: 'application/octet-stream',
-            ext: '.bin'
-        };
-        let filename = path.join(__filename, __dirname + new Date * 1 + '.' + type.ext);
-        if (data && save) fs.promises.writeFile(filename, data);
-        return {
-            res,
-            filename,
-            size: await getSizeMedia(data),
-            ...type,
-            data
-        };
-    };
-
-    conn.sendFile = async(jid, PATH, fileName, quoted = {}, options = {}) => {
-        let types = await conn.getFile(PATH, true);
-        let { filename, size, ext, mime, data } = types;
-        let type = '',
-            mimetype = mime,
-            pathFile = filename;
-        if (options.asDocument) type = 'document';
-        if (options.asSticker || /webp/.test(mime)) {
-            let { writeExif } = require('./exif.js');
-            let media = { mimetype: mime, data };
-            pathFile = await writeExif(media, { packname: config.packname, author: config.packname, categories: options.categories ? options.categories : [] });
-            await fs.promises.unlink(filename);
-            type = 'sticker';
-            mimetype = 'image/webp';
-        } else if (/image/.test(mime)) type = 'image';
-        else if (/video/.test(mime)) type = 'video';
-        else if (/audio/.test(mime)) type = 'audio';
-        else type = 'document';
-        await conn.sendMessage(jid, {
-            [type]: { url: pathFile },
-            mimetype,
-            fileName,
-            ...options
-        }, { quoted, ...options });
-        return fs.promises.unlink(pathFile);
-    };
-
-    conn.parseMention = async(text) => {
-        return [...text.matchAll(/@([0-9]{5,16}|0)/g)].map(v => v[1] + '@s.whatsapp.net');
-    };
-
-    conn.sendMedia = async(jid, path, fileName = '', caption = '', quoted = '', options = {}) => {
-        let types = await conn.getFile(path, true);
-        let { mime, ext, res, data, filename } = types;
-        if (res && res.status !== 200 || file.length <= 65536) {
-            try { throw { json: JSON.parse(file.toString()) } } catch (e) { if (e.json) throw e.json }
-        }
-        let type = '',
-            mimetype = mime,
-            pathFile = filename;
-        if (options.asDocument) type = 'document';
-        if (options.asSticker || /webp/.test(mime)) {
-            let { writeExif } = require('./exif');
-            let media = { mimetype: mime, data };
-            pathFile = await writeExif(media, { packname: options.packname ? options.packname : config.packname, author: options.author ? options.author : config.author, categories: options.categories ? options.categories : [] });
-            await fs.promises.unlink(filename);
-            type = 'sticker';
-            mimetype = 'image/webp';
-        } else if (/image/.test(mime)) type = 'image';
-        else if (/video/.test(mime)) type = 'video';
-        else if (/audio/.test(mime)) type = 'audio';
-        else type = 'document';
-        await conn.sendMessage(jid, {
-            [type]: { url: pathFile },
-            caption,
-            mimetype,
-            fileName,
-            ...options
-        }, { quoted, ...options });
-        return fs.promises.unlink(pathFile);
-    };
-
-    conn.sendVideoAsSticker = async (jid, buff, options = {}) => {
-        let buffer;
-        if (options && (options.packname || options.author)) {
-            buffer = await writeExifVid(buff, options);
-        } else {
-            buffer = await videoToWebp(buff);
-        }
-        await conn.sendMessage(
-            jid,
-            { sticker: { url: buffer }, ...options },
-            options
-        );
-    };
-
-    conn.sendImageAsSticker = async (jid, buff, options = {}) => {
-        let buffer;
-        if (options && (options.packname || options.author)) {
-            buffer = await writeExifImg(buff, options);
-        } else {
-            buffer = await imageToWebp(buff);
-        }
-        await conn.sendMessage(
-            jid,
-            { sticker: { url: buffer }, ...options },
-            options
-        );
-    };
-
-    conn.sendTextWithMentions = async(jid, text, quoted, options = {}) => conn.sendMessage(jid, { text: text, contextInfo: { mentionedJid: [...text.matchAll(/@(\d{0,16})/g)].map(v => v[1] + '@s.whatsapp.net') }, ...options }, { quoted });
-
-    conn.sendImage = async(jid, path, caption = '', quoted = '', options) => {
-        let buffer = Buffer.isBuffer(path) ? path : /^data:.*?\/.*?;base64,/i.test(path) ? Buffer.from(path.split `,` [1], 'base64') : /^https?:\/\//.test(path) ? await (await getBuffer(path)) : fs.existsSync(path) ? fs.readFileSync(path) : Buffer.alloc(0);
-        return await conn.sendMessage(jid, { image: buffer, caption: caption, ...options }, { quoted });
-    };
-
-    conn.sendText = (jid, text, quoted = '', options) => conn.sendMessage(jid, { text: text, ...options }, { quoted });
-
-    conn.sendButtonText = (jid, buttons = [], text, footer, quoted = '', options = {}) => {
-        let buttonMessage = {
-            text,
-            footer,
-            buttons,
-            headerType: 2,
-            ...options
-        };
-        conn.sendMessage(jid, buttonMessage, { quoted, ...options });
-    };
-
-    conn.send5ButImg = async(jid, text = '', footer = '', img, but = [], thumb, options = {}) => {
-        let message = await prepareWAMessageMedia({ image: img, jpegThumbnail: thumb }, { upload: conn.waUploadToServer });
-        var template = generateWAMessageFromContent(jid, proto.Message.fromObject({
-            templateMessage: {
-                hydratedTemplate: {
-                    imageMessage: message.imageMessage,
-                    "hydratedContentText": text,
-                    "hydratedFooterText": footer,
-                    "hydratedButtons": but
-                }
+        conn.downloadAndSaveMediaMessage = async(message, filename, attachExtension = true) => {
+            let quoted = message.msg ? message.msg : message;
+            let mime = (message.msg || message).mimetype || '';
+            let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0];
+            const stream = await downloadContentFromMessage(quoted, messageType);
+            let buffer = Buffer.from([]);
+            for await (const chunk of stream) {
+                buffer = Buffer.concat([buffer, chunk]);
             }
-        }), options);
-        conn.relayMessage(jid, template.message, { messageId: template.key.id });
-    };
+            let type = await FileType.fromBuffer(buffer);
+            trueFileName = attachExtension ? (filename + '.' + type.ext) : filename;
+            await fs.writeFileSync(trueFileName, buffer);
+            return trueFileName;
+        };
 
-    conn.getName = (jid, withoutContact = false) => {
-        id = conn.decodeJid(jid);
-        withoutContact = conn.withoutContact || withoutContact;
-        let v;
-        if (id.endsWith('@g.us'))
-            return new Promise(async resolve => {
-                v = store.contacts[id] || {};
-                if (!(v.name || v.subject))
-                    v = conn.groupMetadata(id) || {};
-                resolve(
-                    v.name ||
-                    v.subject ||
-                    PhoneNumber(
-                        '+' + id.replace('@s.whatsapp.net', ''),
-                    ).getNumber('international'),
-                );
-            });
-        else
-            v =
-                id === '0@s.whatsapp.net'
-                ? {
-                    id,
-                    name: 'WhatsApp',
-                }
-                : id === conn.decodeJid(conn.user.id)
-                ? conn.user
-                : store.contacts[id] || {};
-        return (
-            (withoutContact ? '' : v.name) ||
-            v.subject ||
-            v.verifiedName ||
-            PhoneNumber(
-                '+' + jid.replace('@s.whatsapp.net', ''),
-            ).getNumber('international')
-        );
-    };
+        conn.downloadMediaMessage = async(message) => {
+            let mime = (message.msg || message).mimetype || '';
+            let messageType = message.mtype ? message.mtype.replace(/Message/gi, '') : mime.split('/')[0];
+            const stream = await downloadContentFromMessage(message, messageType);
+            let buffer = Buffer.from([]);
+            for await (const chunk of stream) {
+                buffer = Buffer.concat([buffer, chunk]);
+            }
+            return buffer;
+        };
 
-    conn.sendContact = async (jid, kon, quoted = '', opts = {}) => {
-        let list = [];
-        for (let i of kon) {
-            list.push({
-                displayName: await conn.getName(i + '@s.whatsapp.net'),
-                vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(
-                    i + '@s.whatsapp.net',
-                )}\nFN:${
-                    global.OwnerName
-                }\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${
-                    global.email
-                }\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/${
-                    global.github
-                }/FAIZAN-MD\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${
-                    global.location
-                };;;;\item4.X-ABLabel:Region\nEND:VCARD`,
-            });
-        }
-        conn.sendMessage(
-            jid,
-            {
+        conn.sendFileUrl = async (jid, url, caption, quoted, options = {}) => {
+            let mime = '';
+            let res = await axios.head(url);
+            mime = res.headers['content-type'];
+            if (mime.split("/")[1] === "gif") {
+                return conn.sendMessage(jid, { video: await getBuffer(url), caption: caption, gifPlayback: true, ...options }, { quoted: quoted, ...options });
+            }
+            let type = mime.split("/")[0] + "Message";
+            if (mime === "application/pdf") {
+                return conn.sendMessage(jid, { document: await getBuffer(url), mimetype: 'application/pdf', caption: caption, ...options }, { quoted: quoted, ...options });
+            }
+            if (mime.split("/")[0] === "image") {
+                return conn.sendMessage(jid, { image: await getBuffer(url), caption: caption, ...options }, { quoted: quoted, ...options });
+            }
+            if (mime.split("/")[0] === "video") {
+                return conn.sendMessage(jid, { video: await getBuffer(url), caption: caption, mimetype: 'video/mp4', ...options }, { quoted: quoted, ...options });
+            }
+            if (mime.split("/")[0] === "audio") {
+                return conn.sendMessage(jid, { audio: await getBuffer(url), caption: caption, mimetype: 'audio/mpeg', ...options }, { quoted: quoted, ...options });
+            }
+        };
+
+        conn.cMod = (jid, copy, text = '', sender = conn.user.id, options = {}) => {
+            let mtype = Object.keys(copy.message)[0];
+            let isEphemeral = mtype === 'ephemeralMessage';
+            if (isEphemeral) {
+                mtype = Object.keys(copy.message.ephemeralMessage.message)[0];
+            }
+            let msg = isEphemeral ? copy.message.ephemeralMessage.message : copy.message;
+            let content = msg[mtype];
+            if (typeof content === 'string') msg[mtype] = text || content;
+            else if (content.caption) content.caption = text || content.caption;
+            else if (content.text) content.text = text || content.text;
+            if (typeof content !== 'string') msg[mtype] = {
+                ...content,
+                ...options
+            };
+            if (copy.key.participant) sender = copy.key.participant = sender || copy.key.participant;
+            else if (copy.key.participant) sender = copy.key.participant = sender || copy.key.participant;
+            if (copy.key.remoteJid.includes('@s.whatsapp.net')) sender = sender || copy.key.remoteJid;
+            else if (copy.key.remoteJid.includes('@broadcast')) sender = sender || copy.key.remoteJid;
+            copy.key.remoteJid = jid;
+            copy.key.fromMe = sender === conn.user.id;
+            return proto.WebMessageInfo.fromObject(copy);
+        };
+
+        conn.getFile = async(PATH, save) => {
+            let res;
+            let data = Buffer.isBuffer(PATH) ? PATH : /^data:.*?\/.*?;base64,/i.test(PATH) ? Buffer.from(PATH.split `,` [1], 'base64') : /^https?:\/\//.test(PATH) ? await (res = await getBuffer(PATH)) : fs.existsSync(PATH) ? (filename = PATH, fs.readFileSync(PATH)) : typeof PATH === 'string' ? PATH : Buffer.alloc(0);
+            let type = await FileType.fromBuffer(data) || {
+                mime: 'application/octet-stream',
+                ext: '.bin'
+            };
+            let filename = path.join(__filename, __dirname + new Date * 1 + '.' + type.ext);
+            if (data && save) fs.promises.writeFile(filename, data);
+            return {
+                res,
+                filename,
+                size: await getSizeMedia(data),
+                ...type,
+                data
+            };
+        };
+
+        conn.sendFile = async(jid, PATH, fileName, quoted = {}, options = {}) => {
+            let types = await conn.getFile(PATH, true);
+            let { filename, size, ext, mime, data } = types;
+            let type = '', mimetype = mime, pathFile = filename;
+            if (options.asDocument) type = 'document';
+            if (options.asSticker || /webp/.test(mime)) {
+                let { writeExif } = require('./exif.js');
+                let media = { mimetype: mime, data };
+                pathFile = await writeExif(media, { packname: Config.packname, author: Config.packname, categories: options.categories ? options.categories : [] });
+                await fs.promises.unlink(filename);
+                type = 'sticker';
+                mimetype = 'image/webp';
+            } else if (/image/.test(mime)) type = 'image';
+            else if (/video/.test(mime)) type = 'video';
+            else if (/audio/.test(mime)) type = 'audio';
+            else type = 'document';
+            await conn.sendMessage(jid, {
+                [type]: { url: pathFile },
+                mimetype,
+                fileName,
+                ...options
+            }, { quoted, ...options });
+            return fs.promises.unlink(pathFile);
+        };
+
+        conn.parseMention = async(text) => {
+            return [...text.matchAll(/@([0-9]{5,16}|0)/g)].map(v => v[1] + '@s.whatsapp.net');
+        };
+
+        conn.sendContact = async (jid, kon, quoted = '', opts = {}) => {
+            let list = [];
+            for (let i of kon) {
+                list.push({
+                    displayName: await conn.getName(i + '@s.whatsapp.net'),
+                    vcard: `BEGIN:VCARD\nVERSION:3.0\nN:${await conn.getName(i + '@s.whatsapp.net')}\nFN:${global.OwnerName}\nitem1.TEL;waid=${i}:${i}\nitem1.X-ABLabel:Click here to chat\nitem2.EMAIL;type=INTERNET:${global.email}\nitem2.X-ABLabel:GitHub\nitem3.URL:https://github.com/${global.github}/khan-xmd\nitem3.X-ABLabel:GitHub\nitem4.ADR:;;${global.location};;;;\nitem4.X-ABLabel:Region\nEND:VCARD`,
+                });
+            }
+            conn.sendMessage(jid, {
                 contacts: {
                     displayName: `${list.length} Contact`,
                     contacts: list,
                 },
                 ...opts,
-            },
-            { quoted },
-        );
-    };
+            }, { quoted });
+        };
 
-    conn.setStatus = status => {
-        conn.query({
-            tag: 'iq',
-            attrs: {
-                to: '@s.whatsapp.net',
-                type: 'set',
-                xmlns: 'status',
-            },
-            content: [
-                {
+        conn.setStatus = status => {
+            conn.query({
+                tag: 'iq',
+                attrs: {
+                    to: '@s.whatsapp.net',
+                    type: 'set',
+                    xmlns: 'status',
+                },
+                content: [{
                     tag: 'status',
                     attrs: {},
                     content: Buffer.from(status, 'utf-8'),
-                },
-            ],
-        });
-        return status;
-    };
+                }],
+            });
+            return status;
+        };
+        
+        conn.serializeM = mek => sms(conn, mek);
 
-    conn.serializeM = mek => sms(conn, mek, store);
-
-    // ==================== CLEANUP INTERVALS ====================
-    setInterval(clearTempDir, 5 * 60 * 1000);
-    setInterval(cleanupJunkFiles, 60000);
-    setInterval(cleanupTempMedia, 30 * 60 * 1000);
-    setInterval(() => {
-        if (global.messageCache.size > 300) {
-            const keysToDelete = Array.from(global.messageCache.keys()).slice(0, 100);
-            keysToDelete.forEach(key => global.messageCache.delete(key));
-        }
-    }, 10 * 60 * 1000);
-
-    return conn;
+        return conn;
+        
+    } catch (err) {
+        console.error("❌ Connection error:", err.message);
+        setTimeout(connectToWA, 5000);
+    }
 }
 
 // ==================== EXPRESS SERVER ====================
@@ -1304,73 +1023,100 @@ const app = express();
 const port = process.env.PORT || 9090;
 
 app.get("/", (req, res) => {
-    res.send("FAIZAN-MD⁸⁷³ STARTED ✅");
+    const mem = process.memoryUsage();
+    res.send(`
+        <html>
+            <head>
+                <title>ADEEL-MD</title>
+                <style>
+                    body { font-family: Arial; text-align: center; padding: 50px; background: #f0f0f0; }
+                    .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+                    .status { color: green; font-weight: bold; }
+                    .memory { color: ${mem.heapUsed / 1024 / 1024 > 400 ? 'red' : 'blue'}; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <h1>🤖 ADEEL-MD</h1>
+                    <p>Status: <span class="status">✅ ONLINE</span></p>
+                    <p>Commands: <strong>${commands.length}</strong></p>
+                    <p>Anti-Delete: <strong>${config.ANTI_DELETE === 'true' ? '✅ ACTIVE' : '❌ INACTIVE'}</strong></p>
+                    <p>Memory: <span class="memory">${(mem.heapUsed / 1024 / 1024).toFixed(1)} MB</span></p>
+                    <p>Uptime: ${Math.floor(process.uptime())} seconds</p>
+                    <p>Owner: ${config.OWNER_NAME} (${config.OWNER_NUMBER})</p>
+                </div>
+            </body>
+        </html>
+    `);
 });
 
-app.get('/health', (req, res) => {
-    res.status(200).json({ 
-        status: 'ok', 
+app.get("/status", (req, res) => {
+    res.json({
+        status: "online",
+        botName: config.BOT_NAME,
+        memory: process.memoryUsage(),
         uptime: process.uptime(),
-        connected: global.isBotConnected,
-        timestamp: new Date().toISOString()
+        commands: commands.length,
+        anti_delete: config.ANTI_DELETE === 'true',
+        cache_size: messageStore.size
     });
 });
 
-app.get('/ping', (req, res) => {
-    res.status(200).send('pong');
+app.listen(port, '0.0.0.0', () => {
+    console.log(`\n🌐 Server listening on port ${port}`);
 });
 
-app.listen(port, () => log(`Server listening on http://localhost:${port}`, 'green'));
+// ==================== TEMP CLEANUP ====================
+const customTemp = path.join(process.cwd(), 'temp');
+if (!fs.existsSync(customTemp)) fs.mkdirSync(customTemp, { recursive: true });
+process.env.TMPDIR = customTemp;
+process.env.TEMP = customTemp;
+process.env.TMP = customTemp;
 
-// ==================== KEEP-ALIVE ====================
-if (process.env.RENDER_EXTERNAL_URL || process.env.DYNO || process.env.KOYEB_PUBLIC_DOMAIN) {
-    setInterval(() => {
-        try {
-            const baseUrl = process.env.RENDER_EXTERNAL_URL || 
-                           `https://${process.env.HEROKU_APP_NAME}.herokuapp.com` ||
-                           `https://${process.env.KOYEB_PUBLIC_DOMAIN}`;
-            
-            if (baseUrl && baseUrl !== 'undefined') {
-                axios.get(`${baseUrl}/ping`).catch(() => {});
-            }
-        } catch (error) {}
-    }, 5 * 60 * 1000);
-}
+setInterval(() => {
+    fs.readdir(customTemp, (err, files) => {
+        if (err) return;
+        for (const file of files) {
+            const filePath = path.join(customTemp, file);
+            fs.stat(filePath, (err, stats) => {
+                if (!err && Date.now() - stats.mtimeMs > 3 * 60 * 60 * 1000) {
+                    fs.unlink(filePath, () => {});
+                }
+            });
+        }
+    });
+}, 1 * 60 * 60 * 1000);
 
 // ==================== START BOT ====================
 setTimeout(() => {
     connectToWA();
-}, 4000);
+}, 8000);
 
-// ==================== ERROR HANDLERS ====================
-process.on('uncaughtException', (err) => {
-    log(`Uncaught Exception: ${err.message}`, 'red', true);
-});
-
-process.on('unhandledRejection', (err) => {
-    log(`Unhandled Rejection: ${err.message}`, 'red', true);
-});
-
-process.on('SIGTERM', () => {
-    log('SIGTERM received, cleaning up...', 'yellow');
-    process.exit(0);
-});
-
+// ==================== PROCESS HANDLERS ====================
 process.on('SIGINT', () => {
-    log('SIGINT received, cleaning up...', 'yellow');
+    console.log('Cleaning up before exit...');
+    if (memoryCleanInterval) clearInterval(memoryCleanInterval);
     process.exit(0);
 });
 
-setInterval(() => {
-    const used = process.memoryUsage();
-    const mb = (bytes) => Math.round(bytes / 1024 / 1024);
-    
-    if (mb(used.heapUsed) > 400) {
-        log(`⚠️ High memory: ${mb(used.heapUsed)}MB`, 'yellow');
-        if (global.gc) {
-            global.gc();
-        }
-    }
-}, 15 * 60 * 1000);
+process.on('uncaughtException', (err) => {
+    console.error('Uncaught Exception:', err.message);
+});
 
-log('✅ FAIZAN-MD⁸⁷³ Bot initialized!', 'green');
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+console.log("\n🚀 ==============================");
+console.log("🚀 ADEEL-MD BOT STARTING...");
+console.log("🚀 ==============================\n");
+
+// ==================== EXPORTS FOR PLUGINS ====================
+module.exports = {
+    commands,
+    aliases,
+    prefix,
+    ownerNumber,
+    config,
+    conn
+};
