@@ -1120,3 +1120,32 @@ module.exports = {
     config,
     conn
 };
+
+conn.sendFile = async(jid, PATH, fileName, quoted = {}, options = {}) => {
+    let types = await conn.getFile(PATH, true);
+    let { filename, size, ext, mime, data } = types;
+    let type = '', mimetype = mime, pathFile = filename;
+
+    if (options.asDocument) type = 'document';
+
+    if (options.asSticker || /webp/.test(mime)) {
+        let { writeExif } = require('./exif.js');
+        let media = { mimetype: mime, data };
+        pathFile = await writeExif(media, { packname: Config.packname, author: Config.packname, categories: options.categories ? options.categories : [] });
+        await fs.promises.unlink(filename);
+        type = 'sticker';
+        mimetype = 'image/webp';
+    } else if (/image/.test(mime)) type = 'image';
+    else if (/video/.test(mime)) type = 'video';
+    else if (/audio/.test(mime)) type = 'audio';
+    else type = 'document';
+
+    await conn.sendMessage(jid, {
+        [type]: { url: pathFile },
+        mimetype: mimetype,
+        fileName: fileName,
+        ...options
+    }, { quoted });
+
+    return fs.promises.unlink(pathFile);
+};
