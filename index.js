@@ -1,6 +1,3 @@
-/// CREATED BY MAFIA ADEEL ³⁰³
-   ============================================================ */
-
 // ==================== MEMORY OPTIMIZATION ====================
 global.gc = global.gc || (() => {});
 let memoryCleanInterval = null;
