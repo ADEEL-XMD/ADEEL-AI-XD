@@ -30,20 +30,20 @@ cmd({
         const repoData = await response.json();
 
         const caption = `
-*╭━━━〔 🌐 𝐆𝐈𝐓𝐇𝐔𝐁 𝐑𝐄𝐏𝐎 𝐈𝐍𝐅𝐎 〕━━━⬣*
-*┃ 👤 User: @${m.sender.split("@")[0]}
-*┃
-*┃ 🤖 Bot Name   : ${repoData.name}
-*┃ 👑 Owner      : ${repoData.owner.login}
-*┃ ⭐ Stars      : ${repoData.stargazers_count}
-*┃ 🍴 Forks      : ${repoData.forks_count}
-*┃ 📝 Description:
-*┃ ${repoData.description || "🚀 Advanced WhatsApp Bot • Fast • Secure • Multi-Device Supported • Packed with Premium Features & Smooth Performance"}
-*┃
-*┃ 🔗 Repo Link:
-*┃ ${repoData.html_url}
-*┃
-*╰━━━━━━━━━━━━━━━━━━━━⬣*
+╭━〔 🌐 𝐆𝐈𝐓𝐇𝐔𝐁 𝐑𝐄𝐏𝐎 𝐈𝐍𝐅𝐎 〕━⬣
+┃ 👤 User: @${m.sender.split("@")[0]}
+┃
+┃ 🤖 Bot Name   : ${repoData.name}
+┃ 👑 Owner      : ${repoData.owner.login}
+┃ ⭐ Stars      : ${repoData.stargazers_count}
+┃ 🍴 Forks      : ${repoData.forks_count}
+┃ 📝 Description:
+┃ ${repoData.description || "🚀 Advanced WhatsApp Bot • Fast • Secure • Multi-Device Supported • Packed with Premium Features & Smooth Performance"}
+┃
+┃ 🔗 Repo Link:
+┃ ${repoData.html_url}
+┃
+╰━━━━━━━━━━━━━━━━━━━━⬣
 
 > 🚀 𝐒𝐮𝐩𝐩𝐨𝐫𝐭 𝐓𝐡𝐞 𝐏𝐫𝐨𝐣𝐞𝐜𝐭 ⭐  
 > 💎 𝐏𝐨𝐰𝐞𝐫𝐞𝐝 𝐁𝐲 𝐀𝐃𝐄𝐄𝐋 𝐗𝐌𝐃
