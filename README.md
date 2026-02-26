@@ -30,7 +30,7 @@
 
 <p align="center">
   <a href="https://github.com/ADEEL-XMD/ADEEL-AI-XD/fork">
-    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=github&logoColor=black" alt="Fork Repository"/>
+    <img src="https://img.shields.io/badge/Get-fork_repo-00BFFF?style=for-the-badge&logo=github&logoColor=black" alt="Fork Repository"/>
   </a>
 </p>
 
@@ -47,10 +47,9 @@
 
 <p align="center">
   <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD/tree/main">
-    <img src="./Qadeer/deploy-btn.svg" alt="DEPLOY ON HEROKU" width="260"/>
+    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
   </a>
 </p>
-
 
 
 
@@ -59,14 +58,14 @@
 
 <p align="center">
   <a href="https://whatsapp.com/channel/0029VavP4nX0G0XggHzhVg0R">
-    <img src="./Qadeer/join-channel-btn.svg" alt="Join Channel"/>
+    <img src="https://img.shields.io/badge/Join-Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join Channel"/>
   </a>
 </p>
 
 
 <p align="center">
   <a href="https://api.whatsapp.com/send?phone=923174830990">
-    <img src="./Qadeer/contact-developer-btn.svg" alt="Contact Developer"/>
+    <img src="https://img.shields.io/badge/Contact-Owner-ff0000?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Contact Developer"/>
   </a>
 </p>
 
@@ -81,4 +80,31 @@ ___
   
   
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+<p align="center">📢 Stay connected with <b>Channel</b> & <b>Owner</b> for updates.</p>
 
+---
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+## ⚡ 𝙁𝙀𝘼𝙏𝙐𝙍𝙀𝙎
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+- ✅ Auto Reply  
+- ✅ Media Downloader (FB, Insta, TikTok etc.)  
+- ✅ Group Management  
+- ✅ Easy Setup  
+- ✅ 24/7 Uptime  
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+---
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+## ⚠️ 𝙍𝙀𝙈𝙄𝙉𝘿𝙀𝙍
+- ❌ This bot is not affiliated with WhatsApp Inc.  
+- ⚡ Misuse may ban your number permanently.  
+- 🛡️ Owner is not responsible for any misuse.  
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+---
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+## 📝 𝘿𝙄𝙎𝘾𝙇𝘼𝙄𝙈𝙀𝙍
+This bot is made for **learning & fun purposes only**.  
+Do not sell, misuse, or use without giving credits.  
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
+---
+<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
