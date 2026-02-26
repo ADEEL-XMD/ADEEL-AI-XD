@@ -8,7 +8,7 @@
 
     <linearGradient id="cyanLine" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
-      <stop offset="50%" stop-color="#00e5ff"/>
+      <stop offset="50%" stop-color="#39FF14"/>
       <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
     </linearGradient>
 
@@ -18,7 +18,7 @@
     </linearGradient>
 
     <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#4dd9ff"/>
+      <stop offset="0%" stop-color="#39FF14"/>
       <stop offset="50%" stop-color="#ffffff"/>
       <stop offset="100%" stop-color="#00aaff"/>
     </linearGradient>
@@ -30,7 +30,7 @@
 
     <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
-      <stop offset="30%" stop-color="#00e5ff"/>
+      <stop offset="30%" stop-color="#39FF14"/>
       <stop offset="70%" stop-color="#0099ff"/>
       <stop offset="100%" stop-color="#0077ff" stop-opacity="0"/>
     </linearGradient>
@@ -42,7 +42,7 @@
 
     <radialGradient id="topGlow" cx="50%" cy="0%">
       <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.15"/>
-      <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#39FF14" stop-opacity="0"/>
     </radialGradient>
 
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
@@ -66,7 +66,7 @@
 
     <!-- Dot grid pattern -->
     <pattern id="dots" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-      <circle cx="15" cy="15" r="0.7" fill="#00e5ff" opacity="0.12"/>
+      <circle cx="15" cy="15" r="0.7" fill="#39FF14" opacity="0.12"/>
     </pattern>
 
   </defs>
@@ -84,20 +84,20 @@
   <rect x="24" y="24" width="552" height="352" rx="20" fill="url(#dots)" clip-path="url(#card)"/>
 
   <!-- Card border -->
-  <rect x="24" y="24" width="552" height="352" rx="20" fill="none" stroke="#00aaff" stroke-width="1.5" opacity="0.6" filter="url(#softGlow)"/>
+  <rect x="24" y="24" width="552" height="352" rx="20" fill="none" stroke="#39FF14" stroke-width="1.5" opacity="0.6" filter="url(#softGlow)"/>
 
   <!-- Thin inner border -->
   <rect x="30" y="30" width="540" height="340" rx="17" fill="none" stroke="#00e5ff" stroke-width="0.5" opacity="0.2"/>
 
   <!-- Corner accents — top left -->
-  <g fill="none" stroke="#00e5ff" stroke-width="2" filter="url(#glow)" opacity="0.9">
+  <g fill="none" stroke="#39FF14" stroke-width="2" filter="url(#glow)" opacity="0.9">
     <polyline points="24,65 24,28 61,28"/>
     <polyline points="539,28 576,28 576,65"/>
     <polyline points="24,335 24,372 61,372"/>
     <polyline points="539,372 576,372 576,335"/>
   </g>
   <!-- Corner dots -->
-  <g fill="#00e5ff" filter="url(#glow)" opacity="0.9">
+  <g fill="#39FF14" filter="url(#glow)" opacity="0.9">
     <circle cx="24" cy="28" r="3"/>
     <circle cx="576" cy="28" r="3"/>
     <circle cx="24" cy="372" r="3"/>
@@ -126,14 +126,14 @@
   </circle>
 
   <!-- Inner solid ring -->
-  <circle cx="300" cy="210" r="62" fill="none" stroke="#0066cc" stroke-width="1" opacity="0.6"/>
+  <circle cx="300" cy="210" r="62" fill="none" stroke="#39FF14" stroke-width="1" opacity="0.6"/>
 
   <!-- Inner circle bg -->
   <circle cx="300" cy="210" r="60" fill="#020e22" opacity="0.95"/>
 
   <!-- Orbit dot -->
   <g filter="url(#glow)">
-    <circle r="5" fill="#00e5ff">
+    <circle r="5" fill="#39FF14">
       <animateMotion dur="4s" repeatCount="indefinite">
         <mpath href="#orbit1"/>
       </animateMotion>
@@ -149,17 +149,17 @@
   <!-- AI text -->
   <text x="300" y="230" text-anchor="middle" font-size="64" font-weight="900"
     font-family="'Courier New', monospace" fill="url(#aiGrad)" filter="url(#strongGlow)" letter-spacing="6" opacity="0.95">
-    AI
+    𝐌𝐀𝐅𝐈𝐀
   </text>
   <!-- AI text sharp on top -->
   <text x="300" y="230" text-anchor="middle" font-size="64" font-weight="900"
     font-family="'Courier New', monospace" fill="url(#aiGrad)" letter-spacing="6">
-    AI
+    𝐌𝐀𝐅𝐈𝐀
     <animate attributeName="opacity" values="1;0.85;1" dur="3s" repeatCount="indefinite"/>
   </text>
 
   <!-- Tick marks on outer ring -->
-  <g stroke="#00e5ff" stroke-width="1" opacity="0.35">
+  <g stroke="#39FF14" stroke-width="1" opacity="0.35">
     <line x1="300" y1="105" x2="300" y2="112"/>
     <line x1="300" y1="308" x2="300" y2="315"/>
     <line x1="195" y1="210" x2="202" y2="210"/>
@@ -173,7 +173,7 @@
   <!-- Main title -->
   <text x="300" y="104" text-anchor="middle" font-size="36" font-weight="800"
     font-family="'Courier New', monospace" fill="url(#titleGrad)" filter="url(#softGlow)" letter-spacing="8">
-    QADEER-AI
+    ᗩᗪᗴᗴᒪ ᙭ᗰᗪ
   </text>
 
   <!-- Underline glow under title -->
@@ -187,10 +187,10 @@
     <circle cx="80" cy="360" r="4" fill="#00e5ff">
       <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="96" cy="360" r="4" fill="#00aaff">
+    <circle cx="96" cy="360" r="4" fill="#39FF14">
       <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" begin="-0.5s" repeatCount="indefinite"/>
     </circle>
-    <circle cx="112" cy="360" r="4" fill="#0077ff">
+    <circle cx="112" cy="360" r="4" fill="#39FF14">
       <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" begin="-1s" repeatCount="indefinite"/>
     </circle>
   </g>
@@ -203,12 +203,12 @@
 
   <!-- Bottom text -->
   <text x="300" y="364" text-anchor="middle" font-size="11" font-weight="600"
-    font-family="'Courier New', monospace" fill="#4dd9ff" letter-spacing="4" opacity="0.85">
-    CREATED BY QADEER BRAHVI
+    font-family="'Courier New', monospace" fill="#39FF14" letter-spacing="4" opacity="0.85">
+    CREATED BY MAFIA ADEEL 
   </text>
 
   <!-- Side data labels -->
-  <g font-family="'Courier New', monospace" font-size="8" fill="#00aaff" opacity="0.45" letter-spacing="1">
+  <g font-family="'Courier New', monospace" font-size="8" fill="#0ff" opacity="0.45" letter-spacing="1">
     <text x="38" y="160" transform="rotate(-90 38 160)">NEURAL.NET</text>
     <text x="38" y="270" transform="rotate(-90 38 270)">ACTIVE</text>
     <text x="562" y="160" transform="rotate(90 562 160)">SYS.CORE</text>
