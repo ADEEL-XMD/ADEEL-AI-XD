@@ -30,7 +30,7 @@
 
 <p align="center">
   <a href="https://github.com/ADEEL-XMD/ADEEL-AI-XD/fork">
-    <img src="https://img.shields.io/badge/Get-fork_repo-00BFFF?style=for-the-badge&logo=github&logoColor=black" alt="Fork Repository"/>
+    <img src="https://img.shields.io/badge/Get-FORK_REPO OK-00EF?style=for-the-badge&logo=github&logoColor=white" alt="Fork Repository"/>
   </a>
 </p>
 
@@ -39,7 +39,7 @@
 
 <p align="center">
   <a href="https://qadeerxtech-pair-nel5.onrender.com">
-    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="GET SESSION" width="260"/>
+    <img src="https://img.shields.io/badge/Get-PAIR-0XFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="GET SESSION" width="260"/>
   </a>
 </p>
 
@@ -47,7 +47,7 @@
 
 <p align="center">
   <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD/tree/main">
-    <img src="https://img.shields.io/badge/Get-HEROKU-00BFFF?style=for-the-badge&logo=heroku&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
+    <img src="https://img.shields.io/badge/Get-HEROKU-00BF?style=for-the-badge&logo=heroku&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
   </a>
 </p>
 
