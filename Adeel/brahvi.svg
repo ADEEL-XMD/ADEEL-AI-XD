@@ -2,7 +2,7 @@
   <defs>
 
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#020b18"/>
+      <stop offset="0%" stop-color="#00C853"/>
       <stop offset="100%" stop-color="#010a1f"/>
     </linearGradient>
 
@@ -18,7 +18,7 @@
     </linearGradient>
 
     <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#39FF14"/>
+      <stop offset="0%" stop-color="#00C853"/>
       <stop offset="50%" stop-color="#ffffff"/>
       <stop offset="100%" stop-color="#00aaff"/>
     </linearGradient>
@@ -31,7 +31,7 @@
     <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
       <stop offset="30%" stop-color="#39FF14"/>
-      <stop offset="70%" stop-color="#0099ff"/>
+      <stop offset="70%" stop-color="#00C853"/>
       <stop offset="100%" stop-color="#0077ff" stop-opacity="0"/>
     </linearGradient>
 
