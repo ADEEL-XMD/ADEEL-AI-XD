@@ -23,16 +23,24 @@ cmd({
             const up = runtime(process.uptime());
 
             const text = `
-*╭ׂ┄─̇─̣┄─̇─̣┄─̇─̣┄─̇─̣┄─̇─̣─̇─̣─᛭*
-*│ ╌─̇─̣⊰ ᗩᗪᗴᗴᒪ ᙭ᗰᗪ ⊱┈─̇─̣╌*
-*│─̇─̣┄┄┄┄┄┄┄┄┄┄┄┄┄─̇─̣*
-*│❀ ⏱️ 𝐔𝐩𝐭𝐢𝐦𝐞:* ${up}
-*│❀ 🤖 𝐁𝐨𝐭:* ${config.BOT_NAME}
-*│❀ 👑 𝐎𝐰𝐧𝐞𝐫:* ${config.OWNER_NAME}
-*│❀ ⚙️ 𝐌𝐨𝐝𝐞:* ${config.MODE}
-*╰┄─̣┄─̇─̣┄─̇─̣┄─̇─̣┄─̇─̣─̇─̣─᛭*
+╔═══════════════════════╗
+║ 💻 ADEEL XMD TERMINAL ║
+╚═══════════════════════╝
 
-> 📌 ᴘᴏᴡᴇʀ ʙʏ ᴍᴀғɪᴀ ᴀᴅᴇᴇʟ
+┏━━━〔 ⚡ SYSTEM CORE 〕━━━┓
+┃ ⏱️ UPTIME : ${up}
+┃ 🤖 BOT    : ${config.BOT_NAME}
+┃ 👑 OWNER  : ${config.OWNER_NAME}
+┃ ⚙️ MODE   : ${config.MODE}
+┗━━━━━━━━━━━━━━━━━━━━━━━┛
+
+> 🟢 STATUS : ONLINE
+> 🔐 SECURITY : ENABLED
+> 🧠 AI CORE : ACTIVE
+
+╔═══════════════════════╗
+║ 👑 POWERED BY ADEEL 👑 ║
+╚═══════════════════════╝
 `;
 
             await conn.relayMessage(
