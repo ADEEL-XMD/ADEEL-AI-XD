@@ -30,7 +30,7 @@
 
 <p align="center">
   <a href="https://github.com/ADEEL-XMD/ADEEL-AI-XD/fork">
-    <img src="https://img.shields.io/badge/Get-FORK_REPO OK-00EF?style=for-the-badge&logo=github&logoColor=white" alt="Fork Repository"/>
+    <img src="./Qadeer/fork-btn.svg" alt="Fork Repository"/>
   </a>
 </p>
 
