@@ -1,11 +1,6 @@
+[![MAFIA ADEEL](https://raw.githubusercontent.com/ADEEL-XMD/ADEEL-AI-XD/main/Adeel/brahvi.svg)](https://whatsapp.com/channel/0029VavP4nX0G0XggHzhVg0R)
 
-<a><img src='https://files.catbox.moe/e2sy8u.jpg'/></a>
-  <span style="background: linear-gradient(to right, #ff00cc, #3333ff, #00ffcc, #33ff33, #ffcc00); 
-               -webkit-background-clip: text; 
-               color: transparent; 
-               font-size: 45px; 
-               font-weight: bold;">
-               
+___              
   <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
     
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
@@ -23,8 +18,6 @@
 <p align='center'>
     </p>
 <img src="https://i.imgur.com/dBaSKWF.gif" height="100" width="100%">
-
-
   
 <h1 align="center">ᖴOᖇK ᖇᗴᑭO</h1>
 
