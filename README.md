@@ -19,46 +19,66 @@
 </h2>
 <a href="https://git.io/typing-svg"><img src="https://readme-typing-svg.demolab.com?font=Black+Ops+One&size=50&pause=1000&color=00FF00&center=true&width=810&height=100&lines=+MAFIA-ADEEL" alt="Typing SVG" /></a>
   </p>
+
+<p align='center'>
+    </p>
+<img src="https://i.imgur.com/dBaSKWF.gif" height="100" width="100%">
+
+
+  
+<h1 align="center">ᖴOᖇK ᖇᗴᑭO</h1>
+
+<p align="center">
+  <a href="https://github.com/ADEEL-XMD/ADEEL-AI-XD/fork">
+    <img src="./Qadeer/fork-btn.svg" alt="Fork Repository"/>
+  </a>
+</p>
+
+
+<h1 align="center"> ᘜᗴT ᑭᗩIᖇ </h1>
+
+<p align="center">
+  <a href="https://qadeerxtech-pair-nel5.onrender.com">
+    <img src="./Qadeer/get-session-btn.svg" alt="GET SESSION" width="260"/>
+  </a>
+</p>
+
+<h1 align="center"> ᗪᗴᑭᒪOY </h1>
+
+<p align="center">
+  <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD/tree/main">
+    <img src="./Qadeer/deploy-btn.svg" alt="DEPLOY ON HEROKU" width="260"/>
+  </a>
+</p>
+
+
+
+
+<h1 align="center"> ՏᑌᑭᑭOᖇT </h1>
+
+
+<p align="center">
+  <a href="https://whatsapp.com/channel/0029VavP4nX0G0XggHzhVg0R">
+    <img src="./Qadeer/join-channel-btn.svg" alt="Join Channel"/>
+  </a>
+</p>
+
+
+<p align="center">
+  <a href="https://api.whatsapp.com/send?phone=923174830990">
+    <img src="./Qadeer/contact-developer-btn.svg" alt="Contact Developer"/>
+  </a>
+</p>
+
+<p align='center'>
+    </p>
+<img src="https://i.imgur.com/dBaSKWF.gif" height="100" width="100%">
+
+___
+
+  
   <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
   
-  <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&duration=6000&color=00FF00&background=000F0&center=true&vCenter=true&width=600&lines=🌑+DARK+MAFIA+MD+BETTER+OPTION;❤️‍🩹+THE+MOST+POWERFUL+WHATSAPP+BOT;📌+DEVELOPER+BY+MAFIA+ADEEL;💪+DARK+MAFIA-MD+SOLUTIONS;✔️+FAST+🫣+SECURE+🔒+RELIABLE+✅" alt="Typing Animation">
-</h1>
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-
-
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
   
-  <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&duration=6000&color=00FF00&background=000F0&center=true&vCenter=true&width=600&lines=♻️ᑕᒪIᑕK+ᑭᗩIᖇ+ᑕOᗪᗴ+👇" alt="Typing Animation">
-</h1>
-
-<p align="center">
-  <a href="https://mafiamdpair-6b21b2f6849b.herokuapp.com/">
-<p align="center">
-  <a href="https://mafiamdpair-6b21b2f6849b.herokuapp.com/">
-    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=whatsapp&logoColor=green" />
-  </a>
-</p>
-<h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&duration=6000&color=00FF00&background=000F0&center=true&vCenter=true&width=600&lines=💥Click+above+button+to+generate+your+Session+ID+(required+for+deployment)"
-</h1>
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-  
-  <h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&duration=6000&color=Of00&background=000F0&center=true&vCenter=true&width=600&lines=♻️ᗪᗴᑭᒪOY+ᗷOT+👇" alt="Typing Animation">
-</h1>
-
-  <h1>
-<p align="center">
-  <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD?tab=readme-ov-file">
-    <img src="https://img.shields.io/badge/Deploy-Heroku-7952B3?style=for-the-badge&logo=heroku&logoColor=white" />
-  </a>
-</p>
- </h1>
-<h1 align="center">
-  <img src="https://readme-typing-svg.herokuapp.com?font=Fira+Code&size=30&duration=6000&color=Of00&background=000F0&center=true&vCenter=true&width=600&lines=DEPLOY+YOUR+BOT+(HEROKU)"
-</h1>
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 
