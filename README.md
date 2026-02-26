@@ -67,33 +67,15 @@ ___
   
   <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
   
-  
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-<p align="center">📢 Stay connected with <b>Channel</b> & <b>Owner</b> for updates.</p>
-
----
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-## ⚡ 𝙁𝙀𝘼𝙏𝙐𝙍𝙀𝙎
+## ⚡ ᖴᗴᗩTᑌTᗴՏ
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 - ✅ Auto Reply  
 - ✅ Media Downloader (FB, Insta, TikTok etc.)  
 - ✅ Group Management  
 - ✅ Easy Setup  
 - ✅ 24/7 Uptime  
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
----
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-## ⚠️ 𝙍𝙀𝙈𝙄𝙉𝘿𝙀𝙍
-- ❌ This bot is not affiliated with WhatsApp Inc.  
-- ⚡ Misuse may ban your number permanently.  
-- 🛡️ Owner is not responsible for any misuse.  
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
----
-<a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
-## 📝 𝘿𝙄𝙎𝘾𝙇𝘼𝙄𝙈𝙀𝙍
-This bot is made for **learning & fun purposes only**.  
-Do not sell, misuse, or use without giving credits.  
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
 ---
 <a><img src='https://i.imgur.com/LyHic3i.gif'/></a>
