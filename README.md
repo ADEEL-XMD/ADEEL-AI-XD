@@ -39,7 +39,7 @@
 
 <p align="center">
   <a href="https://mafiamdpair-6b21b2f6849b.herokuapp.com">
-    <img src="https://img.shields.io/badge/Get-PAIR-0XFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="GET SESSION" width="260"/>
+    <img src="./Adeel/get-session-btn.svg" alt="GET SESSION" width="260"/>
   </a>
 </p>
 
@@ -47,7 +47,7 @@
 
 <p align="center">
   <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD/tree/main">
-    <img src="https://img.shields.io/badge/Get-HEROKU-00BF?style=for-the-badge&logo=heroku&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
+    <img src="./Adeel/deploy-btn.svg" alt="DEPLOY ON HEROKU" width="260"/>
   </a>
 </p>
 
@@ -58,7 +58,7 @@
 
 <p align="center">
   <a href="https://whatsapp.com/channel/0029VavP4nX0G0XggHzhVg0R">
-    <img src="https://img.shields.io/badge/Join-Channel-25D366?style=for-the-badge&logo=whatsapp&logoColor=white" alt="Join Channel"/>
+    <img src="./Adeel/join-channel-btn.svg" alt="Join Channel"/>
   </a>
 </p>
 
