@@ -2,12 +2,12 @@
   <defs>
 
     <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#00C853"/>
+      <stop offset="0%" stop-color="#020b18"/>
       <stop offset="100%" stop-color="#010a1f"/>
     </linearGradient>
 
     <linearGradient id="cyanLine" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
+      <stop offset="0%" stop-color="#00ff" stop-opacity="0"/>
       <stop offset="50%" stop-color="#39FF14"/>
       <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
     </linearGradient>
@@ -18,25 +18,25 @@
     </linearGradient>
 
     <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#00C853"/>
+      <stop offset="0%" stop-color="#39FF14"/>
       <stop offset="50%" stop-color="#ffffff"/>
       <stop offset="100%" stop-color="#00aaff"/>
     </linearGradient>
 
     <linearGradient id="aiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#00e5ff"/>
-      <stop offset="100%" stop-color="#0077ff"/>
+      <stop offset="100%" stop-color="#0ff"/>
     </linearGradient>
 
     <linearGradient id="barGrad" x1="0%" y1="0%" x2="100%" y2="0%">
       <stop offset="0%" stop-color="#00e5ff" stop-opacity="0"/>
       <stop offset="30%" stop-color="#39FF14"/>
-      <stop offset="70%" stop-color="#00C853"/>
+      <stop offset="70%" stop-color="#009f"/>
       <stop offset="100%" stop-color="#0077ff" stop-opacity="0"/>
     </linearGradient>
 
     <radialGradient id="centerGlow" cx="50%" cy="50%">
-      <stop offset="0%" stop-color="#00aaff" stop-opacity="0.25"/>
+      <stop offset="0%" stop-color="#44ff" stop-opacity="0.25"/>
       <stop offset="100%" stop-color="#00aaff" stop-opacity="0"/>
     </radialGradient>
 
@@ -108,7 +108,7 @@
   <line x1="80" y1="62" x2="520" y2="62" stroke="url(#cyanLine)" stroke-width="1" opacity="0.5"/>
 
   <!-- Header label left -->
-  <text x="44" y="57" font-size="9" font-family="'Courier New', monospace" fill="#00aaff" opacity="0.7" letter-spacing="2">SYS.ONLINE</text>
+  <text x="44" y="57" font-size="9" font-family="'Courier New', monospace" fill="#aaff" opacity="0.7" letter-spacing="2">SYS.ONLINE</text>
   <!-- Header label right -->
   <text x="556" y="57" text-anchor="end" font-size="9" font-family="'Courier New', monospace" fill="#00aaff" opacity="0.7" letter-spacing="2">v2.0.25</text>
 
@@ -116,7 +116,7 @@
   <ellipse cx="300" cy="210" rx="160" ry="120" fill="url(#centerGlow)"/>
 
   <!-- Outer ring (slow rotate) -->
-  <circle cx="300" cy="210" r="105" fill="none" stroke="#00aaff" stroke-width="1" stroke-dasharray="6 8" opacity="0.4">
+  <circle cx="300" cy="210" r="105" fill="none" stroke="#aff" stroke-width="1" stroke-dasharray="6 8" opacity="0.4">
     <animateTransform attributeName="transform" type="rotate" from="0 300 210" to="360 300 210" dur="20s" repeatCount="indefinite"/>
   </circle>
 
@@ -216,3 +216,5 @@
   </g>
 
 </svg>
+
+
