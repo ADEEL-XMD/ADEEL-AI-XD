@@ -39,7 +39,7 @@
 
 <p align="center">
   <a href="https://qadeerxtech-pair-nel5.onrender.com">
-    <img src="./Qadeer/get-session-btn.svg" alt="GET SESSION" width="260"/>
+    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="GET SESSION" width="260"/>
   </a>
 </p>
 
@@ -47,7 +47,7 @@
 
 <p align="center">
   <a href="https://dashboard.heroku.com/new?template=https://github.com/ADEEL-XMD/ADEEL-AI-XD/tree/main">
-    <img src="https://img.shields.io/badge/Get-Session_ID-00BFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
+    <img src="https://img.shields.io/badge/Get-HEROKU-00BFFF?style=for-the-badge&logo=heroku&logoColor=white" alt="DEPLOY ON HEROKU" width="260"/>
   </a>
 </p>
 
