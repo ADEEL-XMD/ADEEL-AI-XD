@@ -38,7 +38,7 @@
 <h1 align="center"> ᘜᗴT ᑭᗩIᖇ </h1>
 
 <p align="center">
-  <a href="https://qadeerxtech-pair-nel5.onrender.com">
+  <a href="https://mafiamdpair-6b21b2f6849b.herokuapp.com">
     <img src="https://img.shields.io/badge/Get-PAIR-0XFFF?style=for-the-badge&logo=whatsapp&logoColor=white" alt="GET SESSION" width="260"/>
   </a>
 </p>
