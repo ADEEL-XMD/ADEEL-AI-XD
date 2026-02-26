@@ -161,7 +161,7 @@
     "AUTO_REACT": {
       "description": "Make it true if you want react on every message.",
       "required": false,
-      "value": "false"
+      "value": "true"
     },
     
     "CUSTOM_REACT": {
