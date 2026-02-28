@@ -3,6 +3,38 @@
       ╚═╝     ╚═╝╚══════╝      ╚═══╝  ╚═╝  ╚═╝ ╚════╝ ╚═╝     ╚═╝
    ============================================================ */
 
+// Ultra Fast Menu Index (Optimized) // Keeps commands intact, only performance tweaks // Auto Status ON, others OFF
+
+import makeWASocket, { useMultiFileAuthState, DisconnectReason, fetchLatestBaileysVersion } from '@whiskeysockets/baileys'; import P from 'pino'; import NodeCache from 'node-cache';
+
+const msgRetryCounterCache = new NodeCache();
+
+// ====== CONFIG ====== const CONFIG = { autoStatus: true,   // TRUE autoRead: false,    // FALSE autoTyping: false,  // FALSE autoRecord: false,  // FALSE presence: 'available' };
+
+// ====== START ====== async function startBot() { const { state, saveCreds } = await useMultiFileAuthState('session'); const { version } = await fetchLatestBaileysVersion();
+
+const sock = makeWASocket({ version, logger: P({ level: 'silent' }), // ultra fast (no logs) auth: state, msgRetryCounterCache, browser: ['UltraFast', 'Chrome', '1.0.0'], markOnlineOnConnect: false, syncFullHistory: false, defaultQueryTimeoutMs: 0 });
+
+// ====== CONNECTION ====== sock.ev.on('connection.update', (update) => { const { connection, lastDisconnect } = update; if (connection === 'close') { const shouldReconnect = lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut; if (shouldReconnect) startBot(); } else if (connection === 'open') { console.log('✅ Ultra Fast Bot Connected'); } });
+
+sock.ev.on('creds.update', saveCreds);
+
+// ====== AUTO STATUS ONLY ====== sock.ev.on('messages.upsert', async ({ messages }) => { const m = messages[0]; if (!m.message) return;
+
+const jid = m.key.remoteJid;
+
+// Ignore groups/broadcast except status
+if (jid === 'status@broadcast' && CONFIG.autoStatus) {
+  await sock.readMessages([m.key]);
+  return;
+}
+
+// Other autos OFF for speed
+if (CONFIG.autoRead) await sock.readMessages([m.key]);
+
+}); }
+
+startBot();
 // ==================== MEMORY OPTIMIZATION ====================
 global.gc = global.gc || (() => {});
 let memoryCleanInterval = null;
