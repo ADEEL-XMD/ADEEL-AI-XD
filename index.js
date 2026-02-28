@@ -1,6 +1,6 @@
 /* ============================================================
-
-      ╚═╝     ╚═╝╚══════╝      ╚═══╝  ╚═╝  ╚═╝ ╚════╝ ╚═╝     ╚═╝
+   ██
+      ╚═╝   ╚═╝  ╚═╝╚══════╝      ╚═══╝  ╚═╝  ╚═╝ ╚════╝ ╚═╝     ╚═╝
    ============================================================ */
 
 // ==================== MEMORY OPTIMIZATION ====================
@@ -125,7 +125,7 @@ const speed = require('performance-now');
 // ==================== CONFIG ====================
 const config = require('./config');
 const prefix = config.PREFIX || '.';
-const ownerNumber = config.OWNER_NUMBER ? config.OWNER_NUMBER.split(',').map(n => n.trim()) : ['923174838990'];
+const ownerNumber = config.OWNER_NUMBER ? config.OWNER_NUMBER.split(',').map(n => n.trim()) : ['923266105873'];
 
 // ==================== COMMAND HANDLER ====================
 let commands = [];
@@ -507,7 +507,7 @@ async function connectToWA() {
                 
                 // Welcome message
                 setTimeout(() => {
-                    let up = `*Hello there FAIZAN-MD⁸⁷³ User! 👋🏻*\n\n` +
+                    let up = `*Hello there ADEEL-XMD User! 👋🏻*\n\n` +
                             `> Simple, Straight Forward But Loaded With Features 🎊\n\n` +
                             `- *YOUR PREFIX:* = ${prefix}\n` +
                             `- *Commands:* ${commands.length}\n` +
@@ -515,13 +515,13 @@ async function connectToWA() {
                             `> 📌 ᴘᴏᴡᴇʀ ʙʏ ᴍᴀғɪᴀ ᴀᴅᴇᴇʟ`;
                     
                     conn.sendMessage(conn.user.id, { 
-                        image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/15z65y.jpg' }, 
+                        image: { url: config.MENU_IMAGE_URL || 'https://files.catbox.moe/pf9a6s.jpg' }, 
                         caption: up 
                     }).catch(err => console.error("Welcome message error:", err.message));
                     
                     // Send to owner as well
                     conn.sendMessage(ownerNumber[0] + '@s.whatsapp.net', {
-                        text: `✅ *ASEEL-XMD ACTIVATED*\n\nBot is now online!\nCommands: ${commands.length}\nPrefix: ${prefix}\nAnti-Delete: ${config.ANTI_DELETE === 'true' ? '✅ ACTIVE' : '❌ INACTIVE'}`
+                        text: `✅ *ADEEL-XMD ACTIVATED*\n\nBot is now online!\nCommands: ${commands.length}\nPrefix: ${prefix}\nAnti-Delete: ${config.ANTI_DELETE === 'true' ? '✅ ACTIVE' : '❌ INACTIVE'}`
                     }).catch(() => {});
                 }, 5000);
             }
@@ -1132,7 +1132,7 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 console.log("\n🚀 ==============================");
-console.log("🚀 ADEEL-MD BOT STARTING...");
+console.log("🚀 ADEEL-XMD BOT STARTING...");
 console.log("🚀 ==============================\n");
 
 // ==================== EXPORTS FOR PLUGINS ====================
