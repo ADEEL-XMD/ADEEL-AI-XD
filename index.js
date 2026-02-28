@@ -1,154 +1,195 @@
-/*
-╔══════════════════════════════════════╗
-║        ADEEL-XMD ULTRA PRO INDEX     ║
-║        BASE: ADEEL-AI-XD REPO        ║
-║        SPEED: GOD LEVEL ⚡           ║
-╚══════════════════════════════════════╝
-*/
+// ================== ULTRA PRO FAST INDEX ==================
 
 const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  DisconnectReason,
-  fetchLatestBaileysVersion,
-  Browsers
+default: makeWASocket,
+useMultiFileAuthState,
+DisconnectReason,
+fetchLatestBaileysVersion
 } = require("@whiskeysockets/baileys");
 
-const fs = require("fs");
 const P = require("pino");
+const fs = require("fs");
 const path = require("path");
-const qrcode = require("qrcode-terminal");
-const config = require("./config");
 
-
-// ⚡ FORCE ULTRA SPEED CONFIG
-config.AUTO_STATUS_SEEN = "true";
-config.AUTO_REPLY = "false";
-config.AUTO_REACT = "false";
-config.AUTO_STICKER = "false";
-config.AUTO_TYPING = "false";
-config.AUTO_RECORDING = "false";
-config.AUTO_STATUS_REPLY = "false";
-config.AUTO_STATUS_REACT = "false";
-config.READ_MESSAGE = "false";
-
-console.log("🚀 ULTRA SPEED MODE ENABLED");
-
-// ==================== SESSION AUTH ====================
-if (!fs.existsSync(CREDS_PATH)) {
-    if (config.SESSION_ID && config.SESSION_ID.trim() !== "") {
-        const sessdata = config.SESSION_ID.replace("ADEEL-XMD~", '');
+// ==================== SESSION HANDLER ====================
+async function initializeSession() {
+    console.log("\n🔐 ==============================");
+    console.log("🔐 SESSION INITIALIZATION");
+    console.log("🔐 ==============================\n");
+    
+    const sessionDir = path.join(__dirname, 'sessions');
+    if (!fs.existsSync(sessionDir)) {
+        fs.mkdirSync(sessionDir, { recursive: true });
+    }
+    
+    const credsPath = path.join(sessionDir, 'creds.json');
+    
+    if (config.SESSION_ID && config.SESSION_ID.trim() !== "" && !fs.existsSync(credsPath)) {
         try {
+            console.log("📦 Loading session from SESSION_ID...");
+            
+            let sessdata = config.SESSION_ID;
+            
+            const prefixes = ['ADEEL-XMD~', 'BOSS-MD~', 'EMYOU~', 'BOT~'];
+            for (const p of prefixes) {
+                if (sessdata.includes(p)) {
+                    sessdata = sessdata.split(p)[1];
+                    break;
+                }
+            }
+            
+            sessdata = sessdata.trim();
+            while (sessdata.length % 4 !== 0) {
+                sessdata += '=';
+            }
+            
             const decodedData = Buffer.from(sessdata, 'base64').toString('utf-8');
-            fs.writeFileSync(CREDS_PATH, decodedData);
-            log("✅ Session loaded from SESSION_ID", 'green');
+            
+            try {
+                const jsonData = JSON.parse(decodedData);
+                fs.writeFileSync(credsPath, JSON.stringify(jsonData, null, 2));
+                console.log("✅ Session loaded successfully!");
+            } catch (jsonErr) {
+                console.log("⚠️ Not JSON, saving as raw");
+                fs.writeFileSync(credsPath, decodedData);
+            }
         } catch (err) {
-            log("❌ Error decoding session data: " + err, 'red', true);
+            console.error("❌ Session error:", err.message);
         }
     }
-}
-// ================= CONNECT =================
+                  }
+
+// ================== CONFIG ==================
+const OWNER_NUMBER = "923174838990";
+const PREFIX = ".";
+
+// SPEED CONFIG (ONLY STATUS SEEN ON)
+const CONFIG = {
+AUTO_STATUS_SEEN: true,
+AUTO_STATUS_REPLY: false,
+AUTO_STATUS_REACT: false,
+AUTO_REPLY: false,
+AUTO_REACT: false,
+AUTO_STICKER: false,
+AUTO_TYPING: false,
+AUTO_RECORDING: false
+};
+
+// ================== CONNECT ==================
 
 async function startBot() {
 
-  const { state, saveCreds } = await useMultiFileAuthState("./session");
-  const { version } = await fetchLatestBaileysVersion();
+const { state, saveCreds } = await useMultiFileAuthState("./session");
+const { version } = await fetchLatestBaileysVersion();
 
-  const conn = makeWASocket({
-    logger: P({ level: "silent" }),
-    printQRInTerminal: false,
-    browser: Browsers.macOS("Chrome"),
-    auth: state,
-    version,
-    syncFullHistory: false,
-    markOnlineOnConnect: false,
-    fireInitQueries: false,
-    generateHighQualityLinkPreview: true,
-    connectTimeoutMs: 60000,
-    keepAliveIntervalMs: 10000
-  });
+const conn = makeWASocket({
+logger: P({ level: "silent" }),
+printQRInTerminal: true,
+browser: ["ADEEL-XMD","Chrome","1.0.0"],
+auth: state,
+version
+});
 
+// ================== CONNECTION ==================
 
-  // ================= CONNECTION EVENTS =================
+conn.ev.on("connection.update", (update) => {
 
-  conn.ev.on("connection.update", async (update) => {
-    const { connection, qr, lastDisconnect } = update;
+const { connection, lastDisconnect } = update;
 
-    if (qr) {
-      qrcode.generate(qr, { small: true });
-      console.log("📱 Scan QR");
-    }
+if (connection === "close") {
 
-    if (connection === "open") {
-      console.log("✅ ADEEL-XMD CONNECTED ⚡");
-    }
+const shouldReconnect =
+lastDisconnect?.error?.output?.statusCode !== DisconnectReason.loggedOut;
 
-    if (connection === "close") {
-      const shouldReconnect =
-        lastDisconnect?.error?.output?.statusCode !==
-        DisconnectReason.loggedOut;
+if (shouldReconnect) startBot();
+}
 
-      console.log("❌ Connection closed");
+if (connection === "open") {
 
-      if (shouldReconnect) startBot();
-    }
-  });
+console.log("👑 BOT CONNECTED — ULTRA SPEED MODE");
+}
 
-  conn.ev.on("creds.update", saveCreds);
+});
 
+conn.ev.on("creds.update", saveCreds);
 
-  // ================= FAST MESSAGE HANDLER =================
+// ================== MESSAGE HANDLER ==================
 
-  conn.ev.on("messages.upsert", async ({ messages }) => {
-    try {
-      const msg = messages[0];
-      if (!msg.message) return;
+conn.ev.on("messages.upsert", async ({ messages }) => {
 
-      const from = msg.key.remoteJid;
+const m = messages[0];
+if (!m.message) return;
 
-      // ⚡ AUTO STATUS SEEN ONLY
-      if (from === "status@broadcast") {
-        if (config.AUTO_STATUS_SEEN === "true") {
-          await conn.readMessages([msg.key]);
-        }
-        return;
-      }
+const from = m.key.remoteJid;
 
-      const body =
-        msg.message.conversation ||
-        msg.message.extendedTextMessage?.text ||
-        "";
+// ================= STATUS HANDLER =================
 
-      const prefix = config.PREFIX || ".";
-      if (!body.startsWith(prefix)) return;
+if (from === "status@broadcast") {
 
-      const command = body.slice(prefix.length).trim().split(" ")[0];
+if (CONFIG.AUTO_STATUS_SEEN) {
+await conn.readMessages([m.key]);
+}
 
-      // ================= MENU COMMAND =================
+return;
+}
 
-      if (command === "menu") {
-        await conn.sendMessage(from, {
-          text: `╭━━〔 ⚡ ADEEL-XMD ⚡ 〕━━╮
-│ 🚀 Ultra Fast Menu
-│ 🤖 Commands Loaded
-│ 🧠 AI System Active
+// ================= COMMAND HANDLER =================
+
+const body =
+m.message.conversation ||
+m.message.extendedTextMessage?.text ||
+"";
+
+if (!body.startsWith(PREFIX)) return;
+
+const command = body.slice(1).trim().split(" ")[0].toLowerCase();
+
+// ===== MENU =====
+
+if (command === "menu") {
+
+await conn.sendMessage(from, {
+
+text: `
+╭━━〔 👑 ADEEL-XMD MENU 👑 〕━━╮
+│ ⚡ Ultra Speed Mode Active
+│ 🚀 Commands Ready
+│ 🧠 AI System Online
 ╰━━━━━━━━━━━━━━━━━━━━╯
 
-> ⚡ POWERED BY ADEEL`
-        });
-      }
+• .menu
+• .ping
+• .alive
+`
 
-      // ================= PING TEST =================
+}, { quoted: m });
 
-      if (command === "ping") {
-        await conn.sendMessage(from, { text: "⚡ SPEED: GOD LEVEL" });
-      }
+}
 
-    } catch (e) {
-      console.log("Error:", e);
-    }
-  });
+// ===== PING =====
+
+if (command === "ping") {
+
+await conn.sendMessage(from, {
+text: "🏓 PONG — Ultra Fast ⚡"
+}, { quoted: m });
+
+}
+
+// ===== ALIVE =====
+
+if (command === "alive") {
+
+await conn.sendMessage(from, {
+text: "👑 ADEEL-XMD IS RUNNING ⚡"
+}, { quoted: m });
+
+}
+
+});
 
 }
 
 startBot();
+
+// ================= END ==================
