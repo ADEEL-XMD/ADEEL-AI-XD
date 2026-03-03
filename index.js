@@ -65,7 +65,7 @@ async function downloadAndExtractFromMega(megaUrl) {
     const extractedFolders = fs.readdirSync(repoFolder)
       .filter(f => fs.statSync(path.join(repoFolder, f)).isDirectory());
 
-    const shabanFolder = extractedFolders.find(folder => 
+    const mafiaFolder = extractedFolders.find(folder => 
       folder.toLowerCase().includes('mafia-md')
     );
 
