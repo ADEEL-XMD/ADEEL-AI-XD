@@ -27,7 +27,7 @@ ___
 <h1 align="center"> ᘜᗴT ᑭᗩIᖇ </h1>
 
 <p align="center">
-  <a href="https://mafiamdpair-6b21b2f6849b.herokuapp.com">
+  <a href="https://knight-nd-b7595f159f06.herokuapp.com/pair">
     <img src="./Adeel/get-session-btn.svg" alt="GET SESSION" width="260"/>
   </a>
 </p>
