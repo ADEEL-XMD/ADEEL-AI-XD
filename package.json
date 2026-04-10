@@ -13,7 +13,7 @@
     "restart": "pm2 restart ADEEL-XMD "
   },
   "dependencies": {
-    "@whiskeysockets/baileys": "7.0.0-rc.9",
+    "@whiskeysockets/baileys":"github:Jeliostarr/DEV-Baileys",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@dark-yasiya/yt-dl.js": "1.0.5",
     "@dark-yasiya/scrap": "1.0.1",
@@ -31,7 +31,7 @@
     "crypto-digest-sync": "^1.0.0",
     "crypto-js": "latest",
     "dotenv": "^16.0.0",
-    "express": "^5.1.0",
+    "express": "latest",
     "file_size_url": "1.0.6",
     "file-type": "^21.0.0",
     "fluent-ffmpeg": "^2.1.2",
