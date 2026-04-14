@@ -1,6 +1,6 @@
 {
   "name": "ADEEL-XMD ",
-  "version": "7.0.0",
+  "version": "4.3.2",
   "description": "A WhatsApp Bot Created By 𝐀𝐃𝚵𝚵𝐋-𝐌𝐃 ",
   "main": "index.js",
   "engines": {
@@ -13,7 +13,7 @@
     "restart": "pm2 restart ADEEL-XMD "
   },
   "dependencies": {
-    "@whiskeysockets/baileys":"7.0.0-rc.6",
+    "@whiskeysockets/baileys":"7.0.0-rc.9",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@dark-yasiya/yt-dl.js": "1.0.5",
     "@dark-yasiya/scrap": "1.0.1",
