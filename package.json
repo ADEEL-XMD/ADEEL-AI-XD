@@ -13,7 +13,7 @@
     "restart": "pm2 restart ADEEL-XMD "
   },
   "dependencies": {
-    "@whiskeysockets/baileys":"7.0.0-rc.9",
+    "@whiskeysockets/baileys":"7.0.0-rc.6",
     "@adiwajshing/keyed-db": "^0.2.4",
     "@dark-yasiya/yt-dl.js": "1.0.5",
     "@dark-yasiya/scrap": "1.0.1",
