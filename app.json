@@ -63,12 +63,6 @@
       "value": "true"
     }, 
 
-    "AUTO_STATUS_REACT": {
-      "description": "make it true for automatic status reaction or like.",
-      "required": true,
-      "value": "true"
-    }, 
-
     "AUTO_STATUS_REPLY": {
       "description": "Make it true for auto reply msg on status seen.",
       "required": true,
@@ -77,7 +71,7 @@
 
     "AUTO_STATUS_MSG": {
       "description": "Type custom message on status reply",
-      "required": true,
+      "required": false,
       "value": "*SEEN YOUR STATUS BY ᗩᗪᗴᗴᒪ ᙭ᗰᗪ*"
    
      }, 
