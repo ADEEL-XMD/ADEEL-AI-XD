@@ -15,7 +15,7 @@ module.exports = {
     CHATBOT: getConfig("CHATBOT") || "on",
     BOT_NAME: process.env.BOT_NAME || getConfig("BOT_NAME") || "\u{1D400}\u{1D403}\u{1D6B4}\u{1D6B4}\u{1D40B}-\u{1D40C}\u{1D403}",
     MODE: getConfig("MODE") || process.env.MODE || "public",
-    REPO: process.env.REPO || "https://github.com/ADEEL-XMD/ADEEL-AI-XD",
+    REPO: process.env.REPO || "https://github.com/ADEEL-XMD/romanranger",
     BAILEYS: process.env.BAILEYS || "@whiskeysockets/baileys",
 
     // ===== OWNER & DEVELOPER SETTINGS =====
